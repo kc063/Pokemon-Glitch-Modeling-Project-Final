@@ -34,3 +34,15 @@ pred fillEncounterBufferWithPlayerNameData[pre: GameWorld, post: GameWorld] {
 fun nameDataToEncounterData(nameData: NameData): pfunc Int -> EncounterData {
     // Map certain characters or patterns in the name to specific Pokémon IDs and levels
 }
+
+// Check if the current buffer state could lead to a MissingNo or other glitched Pokémon encounter
+// Could also just pass in EncounterData directly.
+pred isGlitchedEncounter[g: EncounterData] {
+    some id: Int, level: Int | (g.wildPokemonBuffer[id]).pokemonID = MissingNoID() and (g.wildPokemonBuffer[id]).level > 100
+    // Additional conditions to identify other unusual or glitched encounters
+}
+
+// Helper function to see if an ID equates to MissingNo or not.
+fun MissingNoID(): Int {
+    // Assign an ID to MissingNo that reflects its glitched nature
+}
