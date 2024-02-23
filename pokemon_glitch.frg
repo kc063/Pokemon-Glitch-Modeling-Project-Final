@@ -1,12 +1,11 @@
 sig GameWorld {
     player: one Player,
-    wildPokemonBuffer: pfunc Int -> EncounterData, // Represents the memory buffer for encounters
-    inventory: seq Item,
+    wildPokemonBuffer: pfunc Byte[] -> EncounterData[], // Represents the memory buffer for encounters
     playerNameData: one NameData // To simulate data that can influence the wildPokemonBuffer
 }
 
 sig Player {
-    location: one Location,
+//    location: one Location,
     name: one String
 }
 
@@ -15,16 +14,30 @@ sig EncounterData {
     level: one Int
 }
 
+sig Byte{
+    value: one Int
+}
+
 sig NameData {
     data: one String // How do we want to represent hex data here?  Should probably be a number, not string.
 }
+
+//WHAT FUNCTIONS
+
+//valid Byte data
+
+//valid NAME data 
+--must be player inputtable
+--must be of size player inputtable
+--we will also be handling conversions under the hood between bytes and the gameboy characters for a US version of PKMN red
+
+
 
 // Simulates filling the wild Pokémon buffer with data influenced by player's name
 pred fillEncounterBufferWithPlayerNameData[pre: GameWorld, post: GameWorld] {
     post.wildPokemonBuffer = nameDataToEncounterData(pre.playerNameData)
     // Ensure other aspects of the world remain consistent
     post.player = pre.player
-    post.inventory = pre.inventory
 }
 
 // Remember that the logic for encounters in this model isn't about picking one, it's about all the possibilities.
