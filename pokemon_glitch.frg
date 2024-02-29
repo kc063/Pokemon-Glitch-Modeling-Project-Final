@@ -218,7 +218,6 @@ pred nimName{
     GameWorld.player.name_7 = 142
 }
 
--- TODO: Add the character name to the visualizer?
 
 -- Step 1: This run should show you four different pokemon at different valid levels (0 to 100)!
 // run {
@@ -255,7 +254,8 @@ pred nimName{
 run {
     wellformedPlayerName
     oldManGlitch
-    nimName
+    allDifferentLetters
+    //nimName
 } for exactly 1 Player, exactly 1 Buffer, exactly 1 GameWorld, 9 Int
 
 -- TODO: Distinguish between totally invalid buffer & glitched buffer in preds, same with player name?
