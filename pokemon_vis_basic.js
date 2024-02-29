@@ -899,6 +899,17 @@ const buf = [
   fam(Buffer.join(buff_6)),  
   fam(Buffer.join(buff_7)),  
 ];  
+
+const plBuff = [  
+  fam(Player.join(name_0)),  
+  fam(Player.join(name_1)),  
+  fam(Player.join(name_2)),  
+  fam(Player.join(name_3)),  
+  fam(Player.join(name_4)),  
+  fam(Player.join(name_5)),  
+  fam(Player.join(name_6)),  
+  fam(Player.join(name_7)),  
+]; 
   
 const encounterGrid = new Grid(encounterGridConfig);  
 let txt = "";  
@@ -914,8 +925,11 @@ buf.forEach((val, idx) => {
   } else {  
     encounterGrid.add({ x: Math.floor(idx / 2), y: 0 }, imageCooker(val));  
   }  
-  txt += charArray[val];  
 });  
+
+plBuff.forEach((val,idx) =>{
+  txt += charArray[val];
+});
   
  
   

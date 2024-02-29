@@ -118,7 +118,11 @@ pred IDIsTwo[i: Int] {
 }
 
 pred IDIsTooLarge[i: Int] {
-    i >= 195
+    i >= 191
+}
+
+pred IDIsTooSmall[i: Int] {
+    i >= -1
 }
 
 test suite for isValidPokemonID {
@@ -140,7 +144,25 @@ test suite for isValidPokemonID {
 
 test suite for isMissingNoID {
 
-    // TODO: Test suite like above where one is MissingNo and one isn't.
+    test expect {
+        tooLargeIsntMissingno: { all c: Int | {
+            IDIsTooLarge[c] and isMissingNoID[c]}
+        } for 9 Int is unsat
+    }
+
+    test expect {
+        validIsntMissingno: { all c: Int | {
+            isValidPokemonID[c] and isMissingNoID[c]}
+        } for 9 Int is unsat
+    }
+
+    test expect {
+        isMissingNo: { all b : Buffer | {
+                all c: Int | {
+                (isInvalidPokemonID[c] and not IDIsTooLarge[c] and not IDIsTooSmall[c] and (b.buff_0 = c)) => isMissingNoID[c]}
+            } for 1 Buffer, 9 Int is theorem
+        }
+    }
     
 }
 
