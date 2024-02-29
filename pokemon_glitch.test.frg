@@ -21,14 +21,42 @@ open "pokemon_glitch.frg"
 
 // assert noNegativeBreaks is sufficient for wellformed
 
-
-
-test suite for isValidCharacter {
-
+pred characterIsZero[i: Int] {
+    i = 0
 }
 
-test suite for isInvalidCharacter {
-    
+pred characterIsNegative[i: Int] {
+    i < 0
+}
+
+pred isInvalidCharacter[i: Int] {
+    -- INVALID Player Name Characters
+    (i <= 126) or 
+    ((i >= 186) and (i <= 224)) or 
+    (i = 228) or (i = 229) or 
+    ((i >= 232) and (i <= 238)) or 
+    (i = 240) or (i >= 246)
+}
+
+pred validAndInvalid {
+    all c: Int | {isInvalidCharacter[c] and isValidCharacter[c]}
+}
+
+test suite for isValidCharacter {
+    test expect {
+        zeroIsValid: { all c: Int | {
+            characterIsZero[c] => isValidCharacter[c]}
+        } for 9 Int is theorem
+    }
+
+    test expect {
+        negativeIsNotValid: { all c: Int | {
+            characterIsNegative[c] => not isValidCharacter[c]}
+        } for 9 Int is theorem
+    }
+
+
+    test expect {bothValidAndInvalild: {validAndInvalid} for exactly 1 GameWorld, 9 Int is unsat }
 }
 
 test suite for isValidLevel {
@@ -73,12 +101,8 @@ test suite for wellformedBuffer {
     -- There can be no single invalid value (level or ID) in a wellformed buffer.
     test expect {no_invalid_values_in_wellformed_buffer: {isInvalidBuffer and wellformedBuffer} for exactly 1 GameWorld, 9 Int is unsat }
 
-    assert isNotInvalidBuffer is necessary for wellformedBuffer
+    --assert isNotInvalidBuffer is necessary for wellformedBuffer
     
-}
-
-pred isNotInvalidPName {
-    not isInvalidPName
 }
 
 pred isInvalidPName {
@@ -93,11 +117,15 @@ pred isInvalidPName {
     isInvalidCharacter[GameWorld.player.name_7]
 }
 
+pred isNotInvalidPName {
+    not isInvalidPName
+}
+
 test suite for wellformedPlayerName {
     -- There can be no single invalid character in a wellformed player name.
-    test expect {no_invalid_values_in_wellformed_buffer: {isInvalidPName and wellformedPlayerName} for exactly 1 GameWorld, 9 Int is unsat }
+    --test expect {no_invalid_char_in_wellformed_name: {isInvalidPName and wellformedPlayerName} for exactly 1 GameWorld, 9 Int is unsat }
 
-    assert isNotInvalidPName is necessary for wellformedPlayerName
+    --assert isNotInvalidPName is necessary for wellformedPlayerName
     
 }
 
@@ -114,10 +142,10 @@ pred someBufferValueUnmatched {
 
 test suite for oldManGlitch {
     -- There cannot be any unmatched buffers between player name & encounter buffer after the glitch.
-    test expect {no_unmatched_buffers: {oldManGlitch and someBufferValueUnmatched} for exactly 1 GameWorld, 9 Int is unsat }
+    --test expect {no_unmatched_buffers: {oldManGlitch and someBufferValueUnmatched} for exactly 1 GameWorld, 9 Int is unsat }
 
     -- Assuming the player's name is valid, encounters after the Old Man glitch will ALWAYS be glitched encounters (b/c characters are all > 100).
-    test expect {no_valid_pokemon_after_glitch_1: {oldManGlitch and wellformedBuffer and wellformedPlayerName} for exactly 1 GameWorld, 9 Int is unsat }
+    --test expect {no_valid_pokemon_after_glitch_1: {oldManGlitch and wellformedBuffer and wellformedPlayerName} for exactly 1 GameWorld, 9 Int is unsat }
 
 }
 

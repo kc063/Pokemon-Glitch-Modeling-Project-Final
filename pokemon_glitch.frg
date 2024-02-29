@@ -49,15 +49,6 @@ pred isValidCharacter[i: Int] {
     ((i >= 241) and (i <= 245))
 }
 
-pred isInvalidCharacter[i: Int] {
-    -- INVALID Player Name Characters
-    (i <= 126) or 
-    ((i >= 186) and (i <= 224)) or 
-    (i = 228) or (i = 229) or 
-    ((i >= 232) and (i <= 238)) or 
-    (i = 240) or (i >= 246)
-}
-
 pred isValidLevel[i: Int] {
     -- VALID Pokemon Levels
     (i >= 1) and (i <= 100)
