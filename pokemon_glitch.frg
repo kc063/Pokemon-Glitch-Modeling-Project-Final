@@ -54,14 +54,9 @@ pred isValidLevel[i: Int] {
     (i >= 1) and (i <= 100)
 }
 
-pred isInvalidLevel[i: Int] {
-    -- INVALID Pokemon Levels
-    (i <= 0) or (i >= 101)
-}
-
 pred isMissingNoID[i: Int] {
     -- Pokemon ID is both invalid and specifically corresponds with a MissingNo.
-    isInvalidPokemonID[i] and (i >= 0) and (i <= 184)
+    not isValidPokemonID[i] and (i >= 0) and (i <= 184)
 }
 
 pred isGlitchTrainerID[i: Int] {
@@ -69,24 +64,19 @@ pred isGlitchTrainerID[i: Int] {
     i >= 191
 }
 
-pred isInvalidPokemonID[i: Int] {
-    -- MissingNo or otherwise INVALID IDs
-    (i <= 0) or (i = 31) or (i = 32) or (i = 50) or
-    (i = 52) or (i = 56) or (i = 61) or (i = 62) or
-    (i = 63) or (i = 67) or (i = 68) or (i = 69) or
-    (i = 79) or (i = 80) or (i = 81) or (i = 86) or
-    (i = 87) or (i = 94) or (i = 95) or (i = 115) or
-    (i = 121) or (i = 122) or (i = 127) or (i = 134) or
-    (i = 135) or (i = 137) or (i = 140) or (i = 146) or
-    (i = 156) or (i = 159) or (i = 160) or (i = 161) or
-    (i = 162) or (i = 172) or (i = 174) or (i = 175) or
-    (i = 181) or (i = 182) or (i = 183) or (i = 184) or
-    (i >= 191)
-}
-
 pred isValidPokemonID[i: Int] {
-    -- Check that a given pokemon ID is valid.
-    not isInvalidPokemonID[i]
+    -- MissingNo or otherwise INVALID IDs
+    (i >= 1) and (i != 31) and (i != 32) and (i != 50) and
+    (i != 52) and (i != 56) and (i != 61) and (i != 62) and
+    (i != 63) and (i != 67) and (i != 68) and (i != 69) and
+    (i != 79) and (i != 80) and (i != 81) and (i != 86) and
+    (i != 87) and (i != 94) and (i != 95) and (i != 115) and
+    (i != 121) and (i != 122) and (i != 127) and (i != 134) and
+    (i != 135) and (i != 137) and (i != 140) and (i != 146) and
+    (i != 156) and (i != 159) and (i != 160) and (i != 161) and
+    (i != 162) and (i != 172) and (i != 174) and (i != 175) and
+    (i != 181) and (i != 182) and (i != 183) and (i != 184) and
+    (i < 191)
 }
 
 pred wellformedBuffer {
@@ -155,15 +145,15 @@ pred oldManGlitch {
 pred guaranteedInvalidEncounter {
     oldManGlitch 
     -- ALL INVALID Levels
-    isInvalidLevel[GameWorld.wildPokemonBuffer.buff_0]
-    isInvalidLevel[GameWorld.wildPokemonBuffer.buff_2]
-    isInvalidLevel[GameWorld.wildPokemonBuffer.buff_4]
-    isInvalidLevel[GameWorld.wildPokemonBuffer.buff_6]
+    not isValidLevel[GameWorld.wildPokemonBuffer.buff_0]
+    not isValidLevel[GameWorld.wildPokemonBuffer.buff_2]
+    not isValidLevel[GameWorld.wildPokemonBuffer.buff_4]
+    not isValidLevel[GameWorld.wildPokemonBuffer.buff_6]
     -- ALL INVALID Pokemon IDs
-    isInvalidPokemonID[GameWorld.wildPokemonBuffer.buff_1]
-    isInvalidPokemonID[GameWorld.wildPokemonBuffer.buff_3]
-    isInvalidPokemonID[GameWorld.wildPokemonBuffer.buff_5]
-    isInvalidPokemonID[GameWorld.wildPokemonBuffer.buff_7]
+    not isValidPokemonID[GameWorld.wildPokemonBuffer.buff_1]
+    not isValidPokemonID[GameWorld.wildPokemonBuffer.buff_3]
+    not isValidPokemonID[GameWorld.wildPokemonBuffer.buff_5]
+    not isValidPokemonID[GameWorld.wildPokemonBuffer.buff_7]
     -- TODO: Overconstraint b/c this requires both an invalid ID AND Level.
 }
 
@@ -220,11 +210,12 @@ pred nimName{
 
 
 -- Step 1: This run should show you four different pokemon at different valid levels (0 to 100)!
-// run {
-//     wellformedBuffer
-//     wellformedPlayerName
-//     allDifferentBufferValues
-// } for exactly 1 Player, exactly 1 Buffer, exactly 1 GameWorld, 9 Int
+run {
+    wellformedBuffer
+    wellformedPlayerName
+    allDifferentLetters
+    allDifferentBufferValues
+} for exactly 1 Player, exactly 1 Buffer, exactly 1 GameWorld, 9 Int
 
 -- Step 2: Perform the old man glitch and add a constraint that ensures a glitched encounter.
 // run {
@@ -251,11 +242,10 @@ pred nimName{
 // } for exactly 1 Player, exactly 1 Buffer, exactly 1 GameWorld, 9 Int
 
 -- Step 5: Perform the old man glitch and put Nim's name in the buffer.
-run {
-    wellformedPlayerName
-    oldManGlitch
-    allDifferentLetters
-    //nimName
-} for exactly 1 Player, exactly 1 Buffer, exactly 1 GameWorld, 9 Int
+// run {
+//     wellformedPlayerName
+//     oldManGlitch
+//     nimName
+// } for exactly 1 Player, exactly 1 Buffer, exactly 1 GameWorld, 9 Int
 
 -- TODO: Distinguish between totally invalid buffer & glitched buffer in preds, same with player name?

@@ -38,7 +38,7 @@ pred isInvalidCharacter[i: Int] {
     (i = 240) or (i >= 246)
 }
 
-pred validAndInvalid {
+pred validAndInvalidCharacter {
     all c: Int | {isInvalidCharacter[c] and isValidCharacter[c]}
 }
 
@@ -56,23 +56,86 @@ test suite for isValidCharacter {
     }
 
 
-    test expect {bothValidAndInvalild: {validAndInvalid} for exactly 1 GameWorld, 9 Int is unsat }
+    test expect {bothValidAndInvalildChar: {validAndInvalidCharacter} for exactly 1 GameWorld, 9 Int is unsat }
+}
+
+pred levelIsOne[i: Int] {
+    i = 1
+}
+
+pred levelIsTooLarge[i: Int] {
+    i >= 101
+}
+
+pred isInvalidLevel[i: Int] {
+    -- INVALID Pokemon Levels
+    (i <= 0) or (i >= 101)
+}
+
+pred validAndInvalidLevel {
+    all l: Int | {isInvalidLevel[l] and isValidLevel[l]}
 }
 
 test suite for isValidLevel {
+
+    test expect {
+        oneIsValid: { all c: Int | {
+            levelIsOne[c] => isValidLevel[c]}
+        } for 9 Int is theorem
+    }
+
+    test expect {
+        tooLargeIsNotValid: { all c: Int | {
+            levelIsTooLarge[c] => not isValidLevel[c]}
+        } for 9 Int is theorem
+    }
+
+    test expect {bothValidAndInvalildLevel: {validAndInvalidLevel} for exactly 1 GameWorld, 9 Int is unsat }
     
 }
 
-test suite for isInvalidLevel {
-    
+pred isInvalidPokemonID[i: Int] {
+    -- MissingNo or otherwise INVALID IDs
+    (i <= 0) or (i = 31) or (i = 32) or (i = 50) or
+    (i = 52) or (i = 56) or (i = 61) or (i = 62) or
+    (i = 63) or (i = 67) or (i = 68) or (i = 69) or
+    (i = 79) or (i = 80) or (i = 81) or (i = 86) or
+    (i = 87) or (i = 94) or (i = 95) or (i = 115) or
+    (i = 121) or (i = 122) or (i = 127) or (i = 134) or
+    (i = 135) or (i = 137) or (i = 140) or (i = 146) or
+    (i = 156) or (i = 159) or (i = 160) or (i = 161) or
+    (i = 162) or (i = 172) or (i = 174) or (i = 175) or
+    (i = 181) or (i = 182) or (i = 183) or (i = 184) or
+    (i >= 191)
 }
 
-test suite for isInvalidPokemonID {
-    
+pred validAndInvalidID {
+    all i: Int | {isInvalidPokemonID[i] and isValidPokemonID[i]}
+}
+
+pred IDIsTwo[i: Int] {
+    i = 2
+}
+
+pred IDIsTooLarge[i: Int] {
+    i >= 195
 }
 
 test suite for isValidPokemonID {
-    
+
+    test expect {
+        twoIsValid: { all c: Int | {
+            IDIsTwo[c] => isValidPokemonID[c]}
+        } for 9 Int is theorem
+    }
+
+    test expect {
+        tooLargeIDIsNotValid: { all c: Int | {
+            IDIsTooLarge[c] => not isValidPokemonID[c]}
+        } for 9 Int is theorem
+    }
+
+    test expect {bothValidAndInvalildID: {validAndInvalidID} for exactly 1 GameWorld, 9 Int is unsat }
 }
 
 test suite for isMissingNoID {
