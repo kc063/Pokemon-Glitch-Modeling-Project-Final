@@ -139,6 +139,8 @@ test suite for isValidPokemonID {
 }
 
 test suite for isMissingNoID {
+
+    // TODO: Test suite like above where one is MissingNo and one isn't.
     
 }
 
@@ -156,16 +158,10 @@ pred isInvalidBuffer {
     isInvalidPokemonID[GameWorld.wildPokemonBuffer.buff_7]
 }
 
-pred isNotInvalidBuffer {
-    not isInvalidBuffer
-}
-
 test suite for wellformedBuffer {
     -- There can be no single invalid value (level or ID) in a wellformed buffer.
+    -- TODO: Example Test that is sat.
     test expect {no_invalid_values_in_wellformed_buffer: {isInvalidBuffer and wellformedBuffer} for exactly 1 GameWorld, 9 Int is unsat }
-
-    --assert isNotInvalidBuffer is necessary for wellformedBuffer
-    
 }
 
 pred isInvalidPName {
