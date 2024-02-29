@@ -33,8 +33,6 @@ one sig GameWorld {
     -- A specific game world with one Buffer & one Player.
     player: one Player,
     wildPokemonBuffer: one Buffer
-    -- TODO: We don't really make use of this pfunc...
-    -- encounters: pfunc Buffer -> Encounter
 }
 
 pred isValidCharacter[i: Int] {
@@ -44,8 +42,9 @@ pred isValidCharacter[i: Int] {
         -- 224 to 227
         -- 230, 231, & 239
         -- 241 to 245
+    (i = 0) or -- Null
     ((i >= 127) and (i <= 185)) or 
-    ((i >= 224) and (i <= 227)) or 
+    ((i >= 225) and (i <= 227)) or 
     (i = 230) or (i = 231) or (i = 239) or 
     ((i >= 241) and (i <= 245))
 }
@@ -53,7 +52,7 @@ pred isValidCharacter[i: Int] {
 pred isInvalidCharacter[i: Int] {
     -- INVALID Player Name Characters
     (i <= 126) or 
-    ((i >= 186) and (i <= 223)) or 
+    ((i >= 186) and (i <= 224)) or 
     (i = 228) or (i = 229) or 
     ((i >= 232) and (i <= 238)) or 
     (i = 240) or (i >= 246)
@@ -76,8 +75,7 @@ pred isMissingNoID[i: Int] {
 
 pred isGlitchTrainerID[i: Int] {
     -- Pokemon ID is both invalid and specifically corresponds with a glitched Trainer encounter.
-    -- TODO: The > 191 is the range specifically for this glitch, but there are obviously other trainer encounters.
-    isInvalidPokemonID[i] and (i >= 191)
+    i >= 191
 }
 
 pred isInvalidPokemonID[i: Int] {
@@ -100,12 +98,6 @@ pred isValidPokemonID[i: Int] {
     not isInvalidPokemonID[i]
 }
 
-// pred isGlitchedEncounter[e: Encounter] {
-//     -- Predicate to check if a given encounter is glitched.
-//     -- TODO: We don't really use this.
-//     isInvalidPokemonID[e.pokemonID] or isInvalidLevel[e.level]
-// }
-
 pred wellformedBuffer {
     isValidLevel[GameWorld.wildPokemonBuffer.buff_0]
     isValidLevel[GameWorld.wildPokemonBuffer.buff_2]
@@ -120,6 +112,13 @@ pred wellformedBuffer {
 
 pred wellformedPlayerName {
     isValidCharacter[GameWorld.player.name_0]
+    isValidCharacter[GameWorld.player.name_1]
+    isValidCharacter[GameWorld.player.name_2]
+    isValidCharacter[GameWorld.player.name_3]
+    isValidCharacter[GameWorld.player.name_4]
+    isValidCharacter[GameWorld.player.name_5]
+    isValidCharacter[GameWorld.player.name_6]
+    isValidCharacter[GameWorld.player.name_7]
 }
 
 pred allDifferentLetters {
@@ -177,22 +176,6 @@ pred guaranteedInvalidEncounter {
     -- TODO: Overconstraint b/c this requires both an invalid ID AND Level.
 }
 
-pred validEncounterAfterGlitch {
-    oldManGlitch 
-    -- ALL VALID Levels
-    not isInvalidLevel[GameWorld.wildPokemonBuffer.buff_0]
-    not isInvalidLevel[GameWorld.wildPokemonBuffer.buff_2]
-    not isInvalidLevel[GameWorld.wildPokemonBuffer.buff_4]
-    not isInvalidLevel[GameWorld.wildPokemonBuffer.buff_6]
-    -- ALL VALID Pokemon IDs
-    not isInvalidPokemonID[GameWorld.wildPokemonBuffer.buff_1]
-    not isInvalidPokemonID[GameWorld.wildPokemonBuffer.buff_3]
-    not isInvalidPokemonID[GameWorld.wildPokemonBuffer.buff_5]
-    not isInvalidPokemonID[GameWorld.wildPokemonBuffer.buff_7]
-    -- TODO: Overconstraint b/c this requires invalid ID AND Level.
-    -- TODO: Test that this should be impossible!
-}
-
 pred guaranteedMissingNoEncounter {
     oldManGlitch
     -- ALL MissingNo Pokemon IDs
@@ -211,14 +194,47 @@ pred guaranteedTrainerEncounter {
     isGlitchTrainerID[GameWorld.wildPokemonBuffer.buff_7]
 }
 
+pred skylerName{
+    GameWorld.player.name_0 = 146
+    GameWorld.player.name_1 = 138
+    GameWorld.player.name_2 = 152
+    GameWorld.player.name_3 = 139
+    GameWorld.player.name_4 = 128
+    GameWorld.player.name_5 = 145
+    GameWorld.player.name_6 = 0
+    GameWorld.player.name_7 = 0
+}
+
+pred jackName{
+    GameWorld.player.name_0 = 137
+    GameWorld.player.name_1 = 128
+    GameWorld.player.name_2 = 130
+    GameWorld.player.name_3 = 138
+    GameWorld.player.name_4 = 0
+    GameWorld.player.name_5 = 0
+    GameWorld.player.name_6 = 0
+    GameWorld.player.name_7 = 0
+}
+
+pred nimName{
+    GameWorld.player.name_0 = 141
+    GameWorld.player.name_1 = 136
+    GameWorld.player.name_2 = 140
+    GameWorld.player.name_3 = 147
+    GameWorld.player.name_4 = 132
+    GameWorld.player.name_5 = 139
+    GameWorld.player.name_6 = 146
+    GameWorld.player.name_7 = 142
+}
+
 -- TODO: Add the character name to the visualizer?
 
 -- Step 1: This run should show you four different pokemon at different valid levels (0 to 100)!
-run {
-    wellformedBuffer
-    wellformedPlayerName
-    allDifferentBufferValues
-} for exactly 1 Player, exactly 1 Buffer, exactly 1 GameWorld, 9 Int
+// run {
+//     wellformedBuffer
+//     wellformedPlayerName
+//     allDifferentBufferValues
+// } for exactly 1 Player, exactly 1 Buffer, exactly 1 GameWorld, 9 Int
 
 -- Step 2: Perform the old man glitch and add a constraint that ensures a glitched encounter.
 // run {
@@ -243,5 +259,12 @@ run {
 //     guaranteedTrainerEncounter
 //     oldManGlitch
 // } for exactly 1 Player, exactly 1 Buffer, exactly 1 GameWorld, 9 Int
+
+-- Step 5: Perform the old man glitch and put Nim's name in the buffer.
+run {
+    wellformedPlayerName
+    oldManGlitch
+    nimName
+} for exactly 1 Player, exactly 1 Buffer, exactly 1 GameWorld, 9 Int
 
 -- TODO: Distinguish between totally invalid buffer & glitched buffer in preds, same with player name?
