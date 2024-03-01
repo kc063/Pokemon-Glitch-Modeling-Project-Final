@@ -20,14 +20,14 @@ Although there are 151 Pokemon in the generation 1 Pokemon games, Pokemon IDs ca
 
 https://bulbapedia.bulbagarden.net/wiki/Old_man_glitch
 
-These remaining IDs, should they somehow be encountered by the player, appear with names like "MissingNo" and "'M," but are all collectively referred to as MissingNo.
+These remaining IDs, should they somehow be encountered by the player, appear with names like "MissingNo" and "'M," but are all collectively referred to as MissingNo. Furthermore, the glitches that are encounterable using specifically the old man glitch are limited to a subset of all the glitched Pokemon, which we have correctly modeled here.
 
 MissingNo can take one of five sprites depending on its (invalid) ID.
 
-Most of them will appear as one of two static-looking sprites.  However, three other sprites for MissingNo exist: a ghost and two fossilized Pokemon.  These three sprites appear elsewhere in the game map but are not (or rather, should not) used for legitimate Pokemon.
+Most of them will appear as one of two static-looking sprites.  However, three other sprites for MissingNo exist: a ghost and two fossilized Pokemon.  These three sprites appear elsewhere in the game map but are not (or rather, should not be) used for legitimate Pokemon.
 
 ### The Player's Name Buffer
-The player's name buffer is the same size as the wild encounter buffer, and each element represents a letter in the player's name.
+We have simplified the in-game logic slightly so that the player's name buffer is the same size as the wild encounter buffer, and each element represents a letter in the player's name.
 
 Character IDs, like Pokemon IDs, are ints ranging from 0 to 255, but only some in that range are valid characters.
 
@@ -55,7 +55,7 @@ Players will always have some variety of glitched encounter after the Old Man gl
 
 ## Steps for Running
 
-To run our model, comment out sequentially the 5 run statements in our Forge model.
+To run our model, sequentially comment out the 5 run statements in our Forge model.
 
 After each run, please navigate to the visualizer and run it to see the Pokemon sprites & characters rendered based on the player name & encounter buffers.
 
@@ -64,3 +64,7 @@ P.S., the 5th run is a cool Nim Telson easter egg!  Feel free to fill in your ow
 The character-number mappings can be found here:
 
 https://bulbapedia.bulbagarden.net/wiki/Old_man_glitch
+
+## Other Simplifications and Additional Information
+
+We have slightly simplified the name generation process as pre-chosen names are handled differently by the game than ones the player inserts themselves from the name select screen. We have also chosen to exclude minor special rules around the terminal character for the player's name (essentially, it produces a valid level (80) and can only appear once, at the end). For readability and better visibility of what's going on under the hood, we have chosen to keep levels on the trainers, although the trainers that appear by Old Man glitch actually take their teams from elsewhere in the game data. Since this was extraneous to the project we made, we chose to exclude it. 
