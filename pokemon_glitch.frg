@@ -2,9 +2,6 @@
 
 option run_sterling "pokemon_vis_basic.js"
 
--- TODO: Is there a way to extend the Int class to make named Ints?
-// sig Level, PokemonID extends Int {}
-
 one sig Buffer {
     -- Possible Pokemon Encounters Memory Buffer
     buff_0: one Int, -- level
@@ -38,6 +35,7 @@ one sig GameWorld {
 pred isValidCharacter[i: Int] {
     -- VALID Player Name Characters
     -- Valid Characters (alphanumerics & a few symbols, not like ASCII mapping):
+        -- 0
         -- 127 to 185
         -- 224 to 227
         -- 230, 231, & 239
@@ -56,12 +54,12 @@ pred isValidLevel[i: Int] {
 
 pred isMissingNoID[i: Int] {
     -- Pokemon ID is both invalid and specifically corresponds with a MissingNo.
-    not isValidPokemonID[i] and (i >= 0) and (i <= 184)
+    not isValidPokemonID[i] and (i >= 0) and (i <= 185)
 }
 
 pred isGlitchTrainerID[i: Int] {
     -- Pokemon ID is both invalid and specifically corresponds with a glitched Trainer encounter.
-    i >= 191
+    not isValidPokemonID[i] and i >= 225
 }
 
 pred isValidPokemonID[i: Int] {
@@ -213,7 +211,6 @@ pred nimName{
 run {
     wellformedBuffer
     wellformedPlayerName
-    allDifferentLetters
     allDifferentBufferValues
 } for exactly 1 Player, exactly 1 Buffer, exactly 1 GameWorld, 9 Int
 

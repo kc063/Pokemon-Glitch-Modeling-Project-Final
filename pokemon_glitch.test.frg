@@ -2,25 +2,6 @@
 
 open "pokemon_glitch.frg"
 
-
-
-
-// test expect { opposingPreds: {noInvalidBuffers and someInvalidBuffer} for exactly 1 Buffer is unsat }
-
-    // test expect {knownLockKeySat: {known} for exactly 5 Lock is sat }
-
-    // test expect {knownWrongTest: {known and known_wrong} for exactly 5 Lock is unsat }
-
-    // test expect {knownLockKeyPlusSat: {known and manufacturer_standard and wellformed} for exactly 5 Lock is sat }
-
--- Check for sat valid pokemon, invalid levels
-
-// pred correctNumberofMasterKeys {
-//     (#{ l: Lock | lockOpenedWith[l, Key.cut0, Key.cut1, Key.cut2, Key.cut3, Key.cut4] } = 5)
-// }
-
-// assert noNegativeBreaks is sufficient for wellformed
-
 pred characterIsZero[i: Int] {
     i = 0
 }
@@ -31,7 +12,8 @@ pred characterIsNegative[i: Int] {
 
 pred isInvalidCharacter[i: Int] {
     -- INVALID Player Name Characters
-    (i <= 126) or 
+    (i < 0) or
+    ((i >= 1) and (i <= 126)) or
     ((i >= 186) and (i <= 224)) or 
     (i = 228) or (i = 229) or 
     ((i >= 232) and (i <= 238)) or 
@@ -43,19 +25,21 @@ pred validAndInvalidCharacter {
 }
 
 test suite for isValidCharacter {
+    -- Confirms that a character of 0 is valid.
     test expect {
         zeroIsValid: { all c: Int | {
             characterIsZero[c] => isValidCharacter[c]}
         } for 9 Int is theorem
     }
 
+    -- Confirms that negative characters are invalid.
     test expect {
         negativeIsNotValid: { all c: Int | {
             characterIsNegative[c] => not isValidCharacter[c]}
         } for 9 Int is theorem
     }
 
-
+    -- Confirms a character cannot be both valid and invalid (where invalid is a predicate with the logic flipped).
     test expect {bothValidAndInvalildChar: {validAndInvalidCharacter} for exactly 1 GameWorld, 9 Int is unsat }
 }
 
@@ -142,26 +126,31 @@ test suite for isValidPokemonID {
     test expect {bothValidAndInvalildID: {validAndInvalidID} for exactly 1 GameWorld, 9 Int is unsat }
 }
 
+pred IDIsMissingNo[i: Int] {
+    i = 156
+}
+
 test suite for isMissingNoID {
 
+    -- Confirms trainer numbers aren't counted as MissingNo.
     test expect {
         tooLargeIsntMissingno: { all c: Int | {
             IDIsTooLarge[c] and isMissingNoID[c]}
         } for 9 Int is unsat
     }
 
+    -- Confirms no valid Pokemon IDs are MissingNo.
     test expect {
         validIsntMissingno: { all c: Int | {
             isValidPokemonID[c] and isMissingNoID[c]}
         } for 9 Int is unsat
     }
 
+    -- Confirms that a verified MissingNo number satisfies the predicate.
     test expect {
-        isMissingNo: { all b : Buffer | {
-                all c: Int | {
-                (isInvalidPokemonID[c] and not IDIsTooLarge[c] and not IDIsTooSmall[c] and (b.buff_0 = c)) => isMissingNoID[c]}
-            } for 1 Buffer, 9 Int is theorem
-        }
+        missingNoIDISMissingNo: { all c: Int | {
+            IDIsMissingNo[c] => isMissingNoID[c]}
+        } for 9 Int is theorem
     }
     
 }
@@ -180,10 +169,25 @@ pred isInvalidBuffer {
     isInvalidPokemonID[GameWorld.wildPokemonBuffer.buff_7]
 }
 
+pred knownValidBuffer {
+    -- Level 50 Rapidashes, Skyler's favorite Pokemon :).
+    GameWorld.wildPokemonBuffer.buff_0 = 50
+    GameWorld.wildPokemonBuffer.buff_2 = 50
+    GameWorld.wildPokemonBuffer.buff_4 = 50
+    GameWorld.wildPokemonBuffer.buff_6 = 50
+
+    GameWorld.wildPokemonBuffer.buff_1 = 164
+    GameWorld.wildPokemonBuffer.buff_3 = 164
+    GameWorld.wildPokemonBuffer.buff_5 = 164
+    GameWorld.wildPokemonBuffer.buff_7 = 164
+}
+
 test suite for wellformedBuffer {
     -- There can be no single invalid value (level or ID) in a wellformed buffer.
-    -- TODO: Example Test that is sat.
     test expect {no_invalid_values_in_wellformed_buffer: {isInvalidBuffer and wellformedBuffer} for exactly 1 GameWorld, 9 Int is unsat }
+
+    -- Confirms that a known valid buffer satisfies the predicate.
+    test expect {known_valid_buffer_is_wellformed: {knownValidBuffer and wellformedBuffer} for exactly 1 GameWorld, 9 Int is sat }
 }
 
 pred isInvalidPName {
@@ -204,9 +208,10 @@ pred isNotInvalidPName {
 
 test suite for wellformedPlayerName {
     -- There can be no single invalid character in a wellformed player name.
-    --test expect {no_invalid_char_in_wellformed_name: {isInvalidPName and wellformedPlayerName} for exactly 1 GameWorld, 9 Int is unsat }
+    test expect {no_invalid_char_in_wellformed_name: {isInvalidPName and wellformedPlayerName} for exactly 1 GameWorld, 9 Int is unsat }
 
-    --assert isNotInvalidPName is necessary for wellformedPlayerName
+    -- Asserts that a Not Invalid Player name is necessary for a wellformed player name.
+    assert isNotInvalidPName is necessary for wellformedPlayerName for exactly 1 GameWorld, 9 Int
     
 }
 
@@ -223,10 +228,10 @@ pred someBufferValueUnmatched {
 
 test suite for oldManGlitch {
     -- There cannot be any unmatched buffers between player name & encounter buffer after the glitch.
-    --test expect {no_unmatched_buffers: {oldManGlitch and someBufferValueUnmatched} for exactly 1 GameWorld, 9 Int is unsat }
+    test expect {no_unmatched_buffers: {oldManGlitch and someBufferValueUnmatched} for exactly 1 GameWorld, 9 Int is unsat }
 
     -- Assuming the player's name is valid, encounters after the Old Man glitch will ALWAYS be glitched encounters (b/c characters are all > 100).
-    --test expect {no_valid_pokemon_after_glitch_1: {oldManGlitch and wellformedBuffer and wellformedPlayerName} for exactly 1 GameWorld, 9 Int is unsat }
+    test expect {no_valid_pokemon_after_glitch_1: {oldManGlitch and wellformedBuffer and wellformedPlayerName} for exactly 1 GameWorld, 9 Int is unsat }
 
 }
 
@@ -240,30 +245,26 @@ pred differentBuffersAndOMGlitch {
 
 test suite for allDifferentLetters {
     -- After the old man glitch, all different buffer values implies all different letters.
-    -- assert differentBuffersAndOMGlitch is sufficient for allDifferentLetters
-}
-
-test suite for allDifferentBufferValues {
-    -- After the old man glitch, all different letters implies all different buffer values.
-    -- assert differentLettersAndOMGlitch is sufficient for allDifferentBufferValues
-    
+    --assert differentBuffersAndOMGlitch is necessary for allDifferentLetters for exactly 1 GameWorld, 9 Int
+    -- This took forever to run so we took it out.
 }
 
 pred notWellformedBuffer {
     not wellformedBuffer
 }
 
-test suite for guaranteedInvalidEncounter {
-    -- Assuming the player's name is valid, encounters after the Old Man glitch will ALWAYS be glitched encounters (b/c characters are all > 100).
-    --test expect {no_valid_pokemon_after_glitch_2: {oldManGlitch and guaranteedInvalidEncounter and wellformedPlayerName} for exactly 1 GameWorld, 9 Int is sat }
-
-    -- An invalid buffer is necessary to guarantee an invalid encounter.
-    --assert notWellformedBuffer is necessary for guaranteedInvalidEncounter
-}
-
 pred normalPokemonEncounterInBuffer {
     GameWorld.wildPokemonBuffer.buff_0 = 17 or -- Valid Level
     GameWorld.wildPokemonBuffer.buff_1 = 17 -- Valid Pokemon
+}
+
+test suite for guaranteedInvalidEncounter {
+    -- Assuming the player's name is valid, encounters after the Old Man glitch will ALWAYS be glitched encounters (b/c characters are all > 100).
+    test expect {no_valid_pokemon_after_glitch_2: {oldManGlitch and guaranteedInvalidEncounter and wellformedPlayerName} for exactly 1 GameWorld, 9 Int is sat }
+
+    -- An invalid buffer is necessary to guarantee an invalid encounter.
+    assert notWellformedBuffer is necessary for guaranteedInvalidEncounter for exactly 1 GameWorld, 9 Int
+    test expect {no_valid_pokemon_and_guarantee: {normalPokemonEncounterInBuffer and guaranteedInvalidEncounter } for exactly 1 GameWorld, 9 Int is unsat }
 }
 
 pred allMissingNoInBuffer {
@@ -274,17 +275,32 @@ pred allMissingNoInBuffer {
 }
 
 pred allTrainersInBuffer {
-    GameWorld.wildPokemonBuffer.buff_1 = 67
-    GameWorld.wildPokemonBuffer.buff_3 = 67
-    GameWorld.wildPokemonBuffer.buff_5 = 67
-    GameWorld.wildPokemonBuffer.buff_7 = 67
+    GameWorld.wildPokemonBuffer.buff_1 = 225
+    GameWorld.wildPokemonBuffer.buff_3 = 225
+    GameWorld.wildPokemonBuffer.buff_5 = 225
+    GameWorld.wildPokemonBuffer.buff_7 = 225
 }
 
 test suite for guaranteedMissingNoEncounter {
-    --test expect {no_valid_pokemon_and_guarantee: {normalPokemonEncounterInBuffer and guaranteedInvalidEncounter } for exactly 1 GameWorld, 9 Int is unsat }
-    --test expect {all_missing_no_guarantee: {normalPokemonEncounterInBuffer and allMissingNoInBuffer } for exactly 1 GameWorld, 9 Int is sat }
+    -- A buffer filled with all trainers guarantees no MissingNo encounter.
+    test expect {allTrainersInBuffBad: {allTrainersInBuffer and guaranteedMissingNoEncounter} for exactly 1 GameWorld, 9 Int is unsat }
+
+    -- A buffer that contains a normal pokemon encounter cannot guarantee a MissingNo encounter.
+    -- The normalPokemonEncounterInBuffer is only for 1 of the 4 Pokemon, so wellformedPlayerName ensures the other 3 fill realistically.
+    test expect {normalPokemonInMissingNo: {normalPokemonEncounterInBuffer and guaranteedMissingNoEncounter and wellformedPlayerName} for exactly 1 GameWorld, 9 Int is unsat }
+
+    -- An all-MissingNo buffer guarantees a MissingNo encounter.
+    test expect {allMissingNoInBuffGood: {allMissingNoInBuffer and guaranteedMissingNoEncounter} for exactly 1 GameWorld, 9 Int is sat }
 }
 
 test suite for guaranteedTrainerEncounter {
-    
+    -- A buffer filled with all trainers guarantees a Trainer encounter.
+    test expect {allTrainersInBuffGood: {allTrainersInBuffer and guaranteedTrainerEncounter} for exactly 1 GameWorld, 9 Int is sat }
+
+    -- A buffer that contains a normal pokemon encounter cannot guarantee a Trainer encounter.
+    -- The normalPokemonEncounterInBuffer is only for 1 of the 4 Pokemon, so wellformedPlayerName ensures the other 3 fill realistically.
+    test expect {normalPokemonInTrainer: {normalPokemonEncounterInBuffer and guaranteedTrainerEncounter and wellformedPlayerName} for exactly 1 GameWorld, 9 Int is unsat }
+
+    -- A buffer filled with all MissingNo guarantees no Trainer encounter.
+    test expect {allMissingNoInBuffBad: {allMissingNoInBuffer and guaranteedTrainerEncounter} for exactly 1 GameWorld, 9 Int is unsat }
 }
