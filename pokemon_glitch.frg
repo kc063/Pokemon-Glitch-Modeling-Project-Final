@@ -26,11 +26,19 @@ one sig Player {
     name_7: one Int  -- pkmn id
 }
 
-one sig GameWorld {
-    -- A specific game world with one Buffer & one Player.
-    player: one Player,
-    wildPokemonBuffer: one Buffer
+one sig Location{
+    town: one Int, --simplified
+    triggers: one Boolean
 }
+
+one sig GameWorld {
+    -- A specific game world with one Buffer & one Player & one Location
+    player: one Player,
+    wildPokemonBuffer: one Buffer,
+    Location: one Location
+}
+
+//Character + ID Predicates
 
 pred isValidCharacter[i: Int] {
     -- VALID Player Name Characters
@@ -46,6 +54,7 @@ pred isValidCharacter[i: Int] {
     (i = 230) or (i = 231) or (i = 239) or 
     ((i >= 241) and (i <= 245))
 }
+
 
 pred isValidLevel[i: Int] {
     -- VALID Pokemon Levels
@@ -128,7 +137,19 @@ pred allDifferentBufferValues {
     }
 }
 
-pred oldManGlitch {
+
+//TODO
+pred moveLocationPokemonDataToPokemonBuffer{
+
+}
+
+//TODO 
+pred moveNameToPokemonBuffer{
+    
+}
+
+//TODO: Will need to be modified, needs to move poke BUFFER over instead
+pred oldManGlitch { //reworked version will be called moveBufferToEncounterTable
     -- Models the Old Man glitch occuring, where the encounter buffer is overwritten with the player's name.
     GameWorld.wildPokemonBuffer.buff_0 = GameWorld.player.name_0
     GameWorld.wildPokemonBuffer.buff_1 = GameWorld.player.name_1
@@ -139,6 +160,20 @@ pred oldManGlitch {
     GameWorld.wildPokemonBuffer.buff_6 = GameWorld.player.name_6
     GameWorld.wildPokemonBuffer.buff_7 = GameWorld.player.name_7
 }
+
+//TODO: If location triggers, moveBufferToEncounterTable
+pred moveLocations{
+
+}
+
+//TODO: If location NOT triggered
+pred locationNotTriggered{
+
+}
+
+//TODO: initial state prior to glitch should always be valid
+
+//TODO: move
 
 pred guaranteedInvalidEncounter {
     oldManGlitch 
