@@ -29,6 +29,8 @@ one sig Player {
 one sig Location{
     town: one Int, --simplified
     triggers: one Boolean --does it trigger a transfer?
+    -- Add wild pokemon for location 
+    pokemonInLocation = one Buffer
 }
 
 one sig GameWorld {
@@ -140,8 +142,16 @@ pred allDifferentBufferValues {
 
 //TODO: Move a location's data into the Pokemon Buffer. A location should have ints similar to the player and buffer.
 pred moveLocationPokemonDataToPokemonBuffer{
-    
-
+    all loc: Location | {
+        GameWorld.wildPokemonBuffer.buff_0 = loc.pokemonInLocation.buff_0 and
+        GameWorld.wildPokemonBuffer.buff_1 = loc.pokemonInLocation.buff_1 and
+        GameWorld.wildPokemonBuffer.buff_2 = loc.pokemonInLocation.buff_2 and
+        GameWorld.wildPokemonBuffer.buff_3 = loc.pokemonInLocation.buff_3 and
+        GameWorld.wildPokemonBuffer.buff_4 = loc.pokemonInLocation.buff_4 and
+        GameWorld.wildPokemonBuffer.buff_5 = loc.pokemonInLocation.buff_5 and
+        GameWorld.wildPokemonBuffer.buff_6 = loc.pokemonInLocation.buff_6 and
+        GameWorld.wildPokemonBuffer.buff_7 = loc.pokemonInLocation.buff_7
+    }
 }
 
 
@@ -161,12 +171,14 @@ pred moveNameToBuffer {
 
 //TODO: If location triggers, moveBufferToEncounterTable
 pred moveLocations{
-
+    all loc: Location | {
+        loc.triggers => moveBufferToEncounterTable
+    }
 }
 
 //TODO: Mainly for testing, just checks if a location does NOT trigger the glitch
 pred locationNotTriggered{
-
+    all loc: Location | not loc.triggers
 }
 
 pred guaranteedInvalidEncounter {
