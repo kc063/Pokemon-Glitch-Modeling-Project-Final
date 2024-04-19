@@ -28,7 +28,7 @@ one sig Player {
 
 one sig Location{
     town: one Int, --simplified
-    triggers: one Boolean
+    triggers: one Boolean --does it trigger a transfer?
 }
 
 one sig GameWorld {
@@ -138,18 +138,16 @@ pred allDifferentBufferValues {
 }
 
 
-//TODO
+//TODO: Move a location's data into the Pokemon Buffer. A location should have ints similar to the player and buffer.
 pred moveLocationPokemonDataToPokemonBuffer{
-
-}
-
-//TODO 
-pred moveNameToPokemonBuffer{
     
+
 }
 
-//TODO: Will need to be modified, needs to move poke BUFFER over instead
-pred oldManGlitch { //reworked version will be called moveBufferToEncounterTable
+
+
+//Old man glitch occurrence, in that data was moved to buffer
+pred moveNameToBuffer { 
     -- Models the Old Man glitch occuring, where the encounter buffer is overwritten with the player's name.
     GameWorld.wildPokemonBuffer.buff_0 = GameWorld.player.name_0
     GameWorld.wildPokemonBuffer.buff_1 = GameWorld.player.name_1
@@ -166,17 +164,13 @@ pred moveLocations{
 
 }
 
-//TODO: If location NOT triggered
+//TODO: Mainly for testing, just checks if a location does NOT trigger the glitch
 pred locationNotTriggered{
 
 }
 
-//TODO: initial state prior to glitch should always be valid
-
-//TODO: move
-
 pred guaranteedInvalidEncounter {
-    oldManGlitch 
+    moveNameToBuffer 
     -- ALL INVALID Levels
     not isValidLevel[GameWorld.wildPokemonBuffer.buff_0]
     not isValidLevel[GameWorld.wildPokemonBuffer.buff_2]
@@ -191,7 +185,7 @@ pred guaranteedInvalidEncounter {
 }
 
 pred guaranteedMissingNoEncounter {
-    oldManGlitch
+    moveNameToBuffer
     -- ALL MissingNo Pokemon IDs
     isMissingNoID[GameWorld.wildPokemonBuffer.buff_1]
     isMissingNoID[GameWorld.wildPokemonBuffer.buff_3]
@@ -200,7 +194,7 @@ pred guaranteedMissingNoEncounter {
 }
 
 pred guaranteedTrainerEncounter {
-    oldManGlitch
+    moveNameToBuffer
     -- ALL Trainer Pokemon IDs
     isGlitchTrainerID[GameWorld.wildPokemonBuffer.buff_1]
     isGlitchTrainerID[GameWorld.wildPokemonBuffer.buff_3]
@@ -254,7 +248,7 @@ run {
 //     wellformedPlayerName
 //     allDifferentLetters
 //     guaranteedInvalidEncounter
-//     oldManGlitch
+//     moveNameToBuffer
 // } for exactly 1 Player, exactly 1 Buffer, exactly 1 GameWorld, 9 Int
 
 -- Step 3: Perform the old man glitch and add a constraint that ensures all MissingNo encounters.
@@ -262,7 +256,7 @@ run {
 //     wellformedPlayerName
 //     allDifferentLetters
 //     guaranteedMissingNoEncounter
-//     oldManGlitch
+//     moveNameToBuffer
 // } for exactly 1 Player, exactly 1 Buffer, exactly 1 GameWorld, 9 Int
 
 -- Step 4: Perform the old man glitch and add a constraint that ensures all glitched trainer encounters.
@@ -270,13 +264,13 @@ run {
 //     wellformedPlayerName
 //     allDifferentLetters
 //     guaranteedTrainerEncounter
-//     oldManGlitch
+//     moveNameToBuffer
 // } for exactly 1 Player, exactly 1 Buffer, exactly 1 GameWorld, 9 Int
 
 -- Step 5: Perform the old man glitch and put Nim's name in the buffer.
 // run {
 //     wellformedPlayerName
-//     oldManGlitch
+//     moveNameToBuffer
 //     nimName
 // } for exactly 1 Player, exactly 1 Buffer, exactly 1 GameWorld, 9 Int
 
