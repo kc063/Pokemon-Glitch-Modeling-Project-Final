@@ -1,7 +1,8 @@
 #lang forge
 
 option run_sterling "pokemon_vis_basic.js"
-
+abstract sig Boolean {}
+one sig True, False extends Boolean {}
 one sig Buffer {
     -- Possible Pokemon Encounters Memory Buffer
     buff_0: one Int, -- level
@@ -28,16 +29,16 @@ one sig Player {
 
 one sig Location{
     town: one Int, --simplified
-    triggers: one Boolean --does it trigger a transfer?
+    triggers: one Boolean, --does it trigger a transfer?
     -- Add wild pokemon for location 
-    pokemonInLocation = one Buffer
+    pokemonInLocation: one Buffer
 }
 
 one sig GameWorld {
     -- A specific game world with one Buffer & one Player & one Location
     player: one Player,
     wildPokemonBuffer: one Buffer,
-    Location: one Location
+    location: one Location
 }
 
 //Character + ID Predicates
@@ -172,13 +173,13 @@ pred moveNameToBuffer {
 //TODO: If location triggers, moveBufferToEncounterTable
 pred moveLocations{
     all loc: Location | {
-        loc.triggers => moveBufferToEncounterTable
+        (loc.triggers = True)=> moveBufferToEncounterTable
     }
 }
 
 //TODO: Mainly for testing, just checks if a location does NOT trigger the glitch
 pred locationNotTriggered{
-    all loc: Location | not loc.triggers
+    all loc: Location | loc.triggers = False
 }
 
 pred guaranteedInvalidEncounter {

@@ -226,21 +226,21 @@ pred someBufferValueUnmatched {
     GameWorld.wildPokemonBuffer.buff_7 != GameWorld.player.name_7
 }
 
-test suite for moveNameToBuffer {
+test suite for oldManGlitch {
     -- There cannot be any unmatched buffers between player name & encounter buffer after the glitch.
-    test expect {no_unmatched_buffers: {moveNameToBuffer and someBufferValueUnmatched} for exactly 1 GameWorld, 9 Int is unsat }
+    test expect {no_unmatched_buffers: {oldManGlitch and someBufferValueUnmatched} for exactly 1 GameWorld, 9 Int is unsat }
 
     -- Assuming the player's name is valid, encounters after the Old Man glitch will ALWAYS be glitched encounters (b/c characters are all > 100).
-    test expect {no_valid_pokemon_after_glitch_1: {moveNameToBuffer and wellformedBuffer and wellformedPlayerName} for exactly 1 GameWorld, 9 Int is unsat }
+    test expect {no_valid_pokemon_after_glitch_1: {oldManGlitch and wellformedBuffer and wellformedPlayerName} for exactly 1 GameWorld, 9 Int is unsat }
 
 }
 
 pred differentLettersAndOMGlitch {
-    allDifferentLetters and moveNameToBuffer
+    allDifferentLetters and oldManGlitch
 }
 
 pred differentBuffersAndOMGlitch {
-    allDifferentBufferValues and moveNameToBuffer
+    allDifferentBufferValues and oldManGlitch
 }
 
 test suite for allDifferentLetters {
@@ -260,7 +260,7 @@ pred normalPokemonEncounterInBuffer {
 
 test suite for guaranteedInvalidEncounter {
     -- Assuming the player's name is valid, encounters after the Old Man glitch will ALWAYS be glitched encounters (b/c characters are all > 100).
-    test expect {no_valid_pokemon_after_glitch_2: {moveNameToBuffer and guaranteedInvalidEncounter and wellformedPlayerName} for exactly 1 GameWorld, 9 Int is sat }
+    test expect {no_valid_pokemon_after_glitch_2: {oldManGlitch and guaranteedInvalidEncounter and wellformedPlayerName} for exactly 1 GameWorld, 9 Int is sat }
 
     -- An invalid buffer is necessary to guarantee an invalid encounter.
     assert notWellformedBuffer is necessary for guaranteedInvalidEncounter for exactly 1 GameWorld, 9 Int
@@ -297,7 +297,7 @@ test suite for guaranteedTrainerEncounter {
     -- A buffer filled with all trainers guarantees a Trainer encounter.
     test expect {allTrainersInBuffGood: {allTrainersInBuffer and guaranteedTrainerEncounter} for exactly 1 GameWorld, 9 Int is sat }
 
-    -- A buffer that contains a normal pokemon encounter cannot guarantee a Trainer encounter.
+    -- A buffer that co ntains a normal pokemon encounter cannot guarantee a Trainer encounter.
     -- The normalPokemonEncounterInBuffer is only for 1 of the 4 Pokemon, so wellformedPlayerName ensures the other 3 fill realistically.
     test expect {normalPokemonInTrainer: {normalPokemonEncounterInBuffer and guaranteedTrainerEncounter and wellformedPlayerName} for exactly 1 GameWorld, 9 Int is unsat }
 
