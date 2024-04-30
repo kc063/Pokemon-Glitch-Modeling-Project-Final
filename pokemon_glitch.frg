@@ -27,6 +27,7 @@ one sig Player {
     name_7: one Int  -- pkmn id
 }
 
+
 one sig Location{
     town: one Int, --simplified
     triggers: one Boolean, --does it trigger a transfer?
@@ -42,7 +43,6 @@ one sig GameWorld {
 }
 
 //Character + ID Predicates
-
 pred isValidCharacter[i: Int] {
     -- VALID Player Name Characters
     -- Valid Characters (alphanumerics & a few symbols, not like ASCII mapping):
@@ -76,6 +76,7 @@ pred isGlitchTrainerID[i: Int] {
 
 pred isValidPokemonID[i: Int] {
     -- MissingNo or otherwise INVALID IDs
+    
     (i >= 1) and (i != 31) and (i != 32) and (i != 50) and
     (i != 52) and (i != 56) and (i != 61) and (i != 62) and
     (i != 63) and (i != 67) and (i != 68) and (i != 69) and
@@ -87,9 +88,11 @@ pred isValidPokemonID[i: Int] {
     (i != 162) and (i != 172) and (i != 174) and (i != 175) and
     (i != 181) and (i != 182) and (i != 183) and (i != 184) and
     (i < 191)
+
 }
 
 pred wellformedBuffer {
+
     isValidLevel[GameWorld.wildPokemonBuffer.buff_0]
     isValidLevel[GameWorld.wildPokemonBuffer.buff_2]
     isValidLevel[GameWorld.wildPokemonBuffer.buff_4]
@@ -99,9 +102,11 @@ pred wellformedBuffer {
     isValidPokemonID[GameWorld.wildPokemonBuffer.buff_3]
     isValidPokemonID[GameWorld.wildPokemonBuffer.buff_5]
     isValidPokemonID[GameWorld.wildPokemonBuffer.buff_7]
+
 }
 
 pred wellformedPlayerName {
+
     isValidCharacter[GameWorld.player.name_0]
     isValidCharacter[GameWorld.player.name_1]
     isValidCharacter[GameWorld.player.name_2]
@@ -110,11 +115,13 @@ pred wellformedPlayerName {
     isValidCharacter[GameWorld.player.name_5]
     isValidCharacter[GameWorld.player.name_6]
     isValidCharacter[GameWorld.player.name_7]
+
 }
 
 pred allDifferentLetters {
     -- Ensures that every character in the player name is different.
     some disj c0,c1,c2,c3,c4,c5,c6,c7: Int | {
+
         GameWorld.player.name_0 = c0 and
         GameWorld.player.name_1 = c1 and
         GameWorld.player.name_2 = c2 and
@@ -123,12 +130,14 @@ pred allDifferentLetters {
         GameWorld.player.name_5 = c5 and
         GameWorld.player.name_6 = c6 and
         GameWorld.player.name_7 = c7
+
     }
 }
 
 pred allDifferentBufferValues {
     -- Ensures that every character in the player name is different.
     some disj c0,c1,c2,c3,c4,c5,c6,c7: Int | {
+
         GameWorld.wildPokemonBuffer.buff_0 = c0 and
         GameWorld.wildPokemonBuffer.buff_1 = c1 and
         GameWorld.wildPokemonBuffer.buff_2 = c2 and
@@ -137,6 +146,7 @@ pred allDifferentBufferValues {
         GameWorld.wildPokemonBuffer.buff_5 = c5 and
         GameWorld.wildPokemonBuffer.buff_6 = c6 and
         GameWorld.wildPokemonBuffer.buff_7 = c7
+
     }
 }
 
@@ -144,6 +154,7 @@ pred allDifferentBufferValues {
 //TODO: Move a location's data into the Pokemon Buffer. A location should have ints similar to the player and buffer.
 pred moveLocationPokemonDataToPokemonBuffer{
     all loc: Location | {
+
         GameWorld.wildPokemonBuffer.buff_0 = loc.pokemonInLocation.buff_0 and
         GameWorld.wildPokemonBuffer.buff_1 = loc.pokemonInLocation.buff_1 and
         GameWorld.wildPokemonBuffer.buff_2 = loc.pokemonInLocation.buff_2 and
@@ -152,6 +163,7 @@ pred moveLocationPokemonDataToPokemonBuffer{
         GameWorld.wildPokemonBuffer.buff_5 = loc.pokemonInLocation.buff_5 and
         GameWorld.wildPokemonBuffer.buff_6 = loc.pokemonInLocation.buff_6 and
         GameWorld.wildPokemonBuffer.buff_7 = loc.pokemonInLocation.buff_7
+
     }
 }
 
@@ -160,6 +172,7 @@ pred moveLocationPokemonDataToPokemonBuffer{
 //Old man glitch occurrence, in that data was moved to buffer
 pred moveNameToBuffer { 
     -- Models the Old Man glitch occuring, where the encounter buffer is overwritten with the player's name.
+
     GameWorld.wildPokemonBuffer.buff_0 = GameWorld.player.name_0
     GameWorld.wildPokemonBuffer.buff_1 = GameWorld.player.name_1
     GameWorld.wildPokemonBuffer.buff_2 = GameWorld.player.name_2
@@ -168,6 +181,7 @@ pred moveNameToBuffer {
     GameWorld.wildPokemonBuffer.buff_5 = GameWorld.player.name_5
     GameWorld.wildPokemonBuffer.buff_6 = GameWorld.player.name_6
     GameWorld.wildPokemonBuffer.buff_7 = GameWorld.player.name_7
+
 }
 
 //TODO: If location triggers, moveBufferToEncounterTable
@@ -207,6 +221,7 @@ pred guaranteedMissingNoEncounter {
 }
 
 pred guaranteedTrainerEncounter {
+    
     moveNameToBuffer
     -- ALL Trainer Pokemon IDs
     isGlitchTrainerID[GameWorld.wildPokemonBuffer.buff_1]
@@ -216,6 +231,7 @@ pred guaranteedTrainerEncounter {
 }
 
 pred skylerName{
+
     GameWorld.player.name_0 = 146
     GameWorld.player.name_1 = 138
     GameWorld.player.name_2 = 152
@@ -224,9 +240,11 @@ pred skylerName{
     GameWorld.player.name_5 = 145
     GameWorld.player.name_6 = 0
     GameWorld.player.name_7 = 0
+
 }
 
 pred jackName{
+
     GameWorld.player.name_0 = 137
     GameWorld.player.name_1 = 128
     GameWorld.player.name_2 = 130
@@ -235,6 +253,7 @@ pred jackName{
     GameWorld.player.name_5 = 0
     GameWorld.player.name_6 = 0
     GameWorld.player.name_7 = 0
+
 }
 
 pred nimName{
@@ -248,7 +267,14 @@ pred nimName{
     GameWorld.player.name_7 = 142
 }
 
+//init
+pred init {
+    wellformedBuffer
+    wellformedPlayerName
+    allDifferentBufferValues
+    GameWorld.location.triggers = False
 
+}
 -- Step 1: This run should show you four different pokemon at different valid levels (0 to 100)!
 run {
     wellformedBuffer
