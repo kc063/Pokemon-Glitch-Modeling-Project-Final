@@ -3,6 +3,9 @@
 option run_sterling "pokemon_vis_basic.js"
 abstract sig Boolean {}
 one sig True, False extends Boolean {}
+-- if we want to add in a new area option we can
+// abstract sig Town {}
+// one sig Cinnibar, Wild extends Town {}
 one sig Buffer {
     -- Possible Pokemon Encounters Memory Buffer
     buff_0: one Int, -- level
@@ -27,7 +30,7 @@ one sig Player {
     name_7: one Int  -- pkmn id
 }
 
-
+-- potentially change town: one Int to town: Town
 one sig Location{
     town: one Int, --simplified
     triggers: one Boolean, --does it trigger a transfer?
@@ -152,6 +155,7 @@ pred allDifferentBufferValues {
 
 
 //TODO: Move a location's data into the Pokemon Buffer. A location should have ints similar to the player and buffer.
+-- all loc: Location | loc.town = cinibar => ...
 pred moveLocationPokemonDataToPokemonBuffer{
     all loc: Location | {
 
@@ -221,7 +225,7 @@ pred guaranteedMissingNoEncounter {
 }
 
 pred guaranteedTrainerEncounter {
-    
+
     moveNameToBuffer
     -- ALL Trainer Pokemon IDs
     isGlitchTrainerID[GameWorld.wildPokemonBuffer.buff_1]
@@ -274,6 +278,10 @@ pred init {
     allDifferentBufferValues
     GameWorld.location.triggers = False
 
+}
+-- unsure if this is what you meant for the time field
+pred timeField {
+    (init and not wellformedBuffer) <=> moveLocations
 }
 -- Step 1: This run should show you four different pokemon at different valid levels (0 to 100)!
 run {
