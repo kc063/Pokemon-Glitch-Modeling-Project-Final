@@ -3,6 +3,11 @@
 option run_sterling "pokemon_vis_basic.js"
 abstract sig Boolean {}
 one sig True, False extends Boolean {}
+
+//next is linear ALWAYS
+sig TIME {
+    next: lone TIME
+}
 -- if we want to add in a new area option we can
 // abstract sig Town {}
 // one sig Cinnibar, Wild extends Town {}
@@ -36,6 +41,15 @@ one sig Location{
     triggers: one Boolean, --does it trigger a transfer?
     -- Add wild pokemon for location 
     pokemonInLocation: one Buffer
+}
+
+one sig Cinnabar extends Location{}
+one sig Viridian extends Location{}
+
+pred validLocationStats{
+    Viridian.triggers
+    not Cinnabar.triggers
+
 }
 
 one sig GameWorld {
@@ -94,17 +108,17 @@ pred isValidPokemonID[i: Int] {
 
 }
 
-pred wellformedBuffer {
+pred wellformedBuffer[b: Buffer] {
 
-    isValidLevel[GameWorld.wildPokemonBuffer.buff_0]
-    isValidLevel[GameWorld.wildPokemonBuffer.buff_2]
-    isValidLevel[GameWorld.wildPokemonBuffer.buff_4]
-    isValidLevel[GameWorld.wildPokemonBuffer.buff_6]
+    isValidLevel[b.buff_0]
+    isValidLevel[b.buff_2]
+    isValidLevel[b.buff_4]
+    isValidLevel[b.buff_6]
     -- Invalid Pokemon IDs
-    isValidPokemonID[GameWorld.wildPokemonBuffer.buff_1]
-    isValidPokemonID[GameWorld.wildPokemonBuffer.buff_3]
-    isValidPokemonID[GameWorld.wildPokemonBuffer.buff_5]
-    isValidPokemonID[GameWorld.wildPokemonBuffer.buff_7]
+    isValidPokemonID[b.buff_1]
+    isValidPokemonID[b.buff_3]
+    isValidPokemonID[b.buff_5]
+    isValidPokemonID[b.buff_7]
 
 }
 
@@ -188,11 +202,9 @@ pred moveNameToBuffer {
 
 }
 
-//TODO: If location triggers, moveBufferToEncounterTable
-pred moveLocations{
-    all loc: Location | {
-        (loc.triggers = True)=> moveBufferToEncounterTable
-    }
+//new location => move to table
+pred moveLocations[l1,l2:Location]{
+    (l2.triggers = True)=> moveBufferToEncounterTable
 }
 
 //TODO: Mainly for testing, just checks if a location does NOT trigger the glitch
@@ -273,19 +285,24 @@ pred nimName{
 
 //init
 pred init {
-    wellformedBuffer
+    wellformedBuffer[GameWorld.wildPokemonBuffer]
     wellformedPlayerName
     allDifferentBufferValues
-    GameWorld.location.triggers = False
-
 }
 -- unsure if this is what you meant for the time field
-pred timeField {
-    (init and not wellformedBuffer) <=> moveLocations
+pred traces {
+    //we want this to be more like traces
+    //remember to run with next is linear
+    //also with triggering, triggering only happens if the location moved to triggers
+    //so if you remain in the same location, no trigger
+    //which one can do, supposedly
+
+    //we should also make activating the tutorial a move that moves the name into the wild pokemon buffer
+    (init and not wellformedBuffer[GameWorld.wildPokemonBuffer]) <=> moveLocations
 }
 -- Step 1: This run should show you four different pokemon at different valid levels (0 to 100)!
 run {
-    wellformedBuffer
+    wellformedBuffer[GameWorld.wildPokemonBuffer]
     wellformedPlayerName
     allDifferentBufferValues
 } for exactly 1 Player, exactly 1 Buffer, exactly 1 GameWorld, 9 Int
