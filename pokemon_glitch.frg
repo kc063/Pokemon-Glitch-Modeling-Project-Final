@@ -9,8 +9,8 @@ sig TIME {
     next: lone TIME
 }
 -- if we want to add in a new area option we can
-// abstract sig Town {}
-// one sig Cinnibar, Wild extends Town {}
+abstract sig Town {}
+one sig Cinnibar, Wild extends Town {}
 one sig Buffer {
     -- Possible Pokemon Encounters Memory Buffer
     buff_0: one Int, -- level
@@ -37,20 +37,12 @@ one sig Player {
 
 -- potentially change town: one Int to town: Town
 one sig Location{
-    town: one Int, --simplified
+    town: one Town, --simplified
     triggers: one Boolean, --does it trigger a transfer?
     -- Add wild pokemon for location 
     pokemonInLocation: one Buffer
 }
 
-one sig Cinnabar extends Location{}
-one sig Viridian extends Location{}
-
-pred validLocationStats{
-    Viridian.triggers
-    not Cinnabar.triggers
-
-}
 
 one sig GameWorld {
     -- A specific game world with one Buffer & one Player & one Location
@@ -203,8 +195,8 @@ pred moveNameToBuffer {
 }
 
 //new location => move to table
-pred moveLocations[l1,l2:Location]{
-    (l2.triggers = True)=> moveBufferToEncounterTable
+pred moveLocations[l2:Location]{
+    (l2.triggers = True) => moveLocationPokemonDataToPokemonBuffer
 }
 
 //TODO: Mainly for testing, just checks if a location does NOT trigger the glitch
@@ -287,7 +279,6 @@ pred nimName{
 pred init {
     wellformedBuffer[GameWorld.wildPokemonBuffer]
     wellformedPlayerName
-    allDifferentBufferValues
 }
 -- unsure if this is what you meant for the time field
 pred traces {
@@ -302,10 +293,13 @@ pred traces {
 }
 -- Step 1: This run should show you four different pokemon at different valid levels (0 to 100)!
 run {
-    wellformedBuffer[GameWorld.wildPokemonBuffer]
-    wellformedPlayerName
-    allDifferentBufferValues
-} for exactly 1 Player, exactly 1 Buffer, exactly 1 GameWorld, 9 Int
+    //wellformedBuffer[GameWorld.wildPokemonBuffer]
+    //wellformedPlayerName
+    //allDifferentBufferValues
+    init
+} for 9 Int
+
+//for exactly 1 Player, exactly 4 Buffer, exactly 1 GameWorld, 9 Int
 
 -- Step 2: Perform the old man glitch and add a constraint that ensures a glitched encounter.
 // run {

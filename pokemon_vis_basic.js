@@ -936,6 +936,21 @@ plBuff.forEach((val,idx) =>{
   
 const stage = new Stage();  
 stage.add(encounterGrid);  
+
+var allElements = document.querySelectorAll('*');
+
+allElements.forEach(function(element) {
+    console.log(element);
+});
+
+var divWithSVG = document.getElementById('svg-container');
+
+// Find the SVG container within the div
+var svgContainer = divWithSVG.querySelector('svg');
+
+var audio = new Audio("https://jackofalltrades.neocities.org/1710_final_project/rbybattle.mp3");
+
+audio.play();
  
   
 stage.add(new TextBox({  
