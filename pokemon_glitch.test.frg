@@ -170,7 +170,8 @@ pred isInvalidBuffer {
 }
 
 pred knownValidBuffer {
-    -- Level 50 Rapidashes, Skyler's favorite Pokemon :).
+    -- Level 50 Rapidashes, Skyler's favorite Pokemon :)
+
     GameWorld.wildPokemonBuffer.buff_0 = 50
     GameWorld.wildPokemonBuffer.buff_2 = 50
     GameWorld.wildPokemonBuffer.buff_4 = 50
