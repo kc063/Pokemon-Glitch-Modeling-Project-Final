@@ -16,7 +16,7 @@ sig TIME {
 -- if we want to add in a new area option we can
 abstract sig Town {}
 one sig Cinnibar, Wild extends Town {}
-one sig Buffer {
+sig Buffer {
     -- Possible Pokemon Encounters Memory Buffer 
     buff_0: one Int, -- level
     buff_1: one Int, -- pkmn id
@@ -45,7 +45,7 @@ one sig Location{
     town: one Town, --simplified
     triggers:  one Boolean, --does it trigger a transfer?
     -- Add wild pokemon for location 
-    pokemonInLocation: pfunc TIME -> Buffer
+    pokemonInLocation: one Buffer
 }
 
 
@@ -149,7 +149,7 @@ pred allDifferentLetters {
     }
 }
 
-pred allDifferentBufferValues {
+pred allDifferentBufferValues[b: Buffer] {
     -- Ensures that every character in the player name is different.
     some disj c0,c1,c2,c3,c4,c5,c6,c7: Int | {
 
@@ -164,40 +164,56 @@ pred allDifferentBufferValues {
 
     }
 }
+pred allDifferentPokemon[b: Buffer]{
+    some disj c1, c3, c5, c7: Int | {
+        b.buff_1 = c1
+        b.buff_3 = c3
+        b.buff_5 = c5
+        b.buff_7 = c7
+    }
+}
+pred allDifferentLevel[b: Buffer]{
+    some disj c0, c2, c4, c6 Int | {
+        b.buff_0 = c0
+        b.buff_2 = c2
+        b.buff_4 = c4
+        b.buff_6 = c6
+    }
+}
 
 
 //TODO: Move a location's data into the Pokemon Buffer. A location should have ints similar to the player and buffer.
 -- all loc: Location | loc.town = cinibar => ...
 --may want b1 and b2 to be the same thing
-pred moveLocationPokemonDataToPokemonBuffer[t1, t2: TIME]{
+pred moveLocationPokemonDataToPokemonBuffer[t1, t2: TIME, b: Buffer]{
     some loc: Location | {
 
-        GameWorld.wildPokemonBuffer.buff_0[t1] = loc.pokemonInLocation.buff_0[t2] and
-        GameWorld.wildPokemonBuffer.buff_1[t1] = loc.pokemonInLocation.buff_1[t2] and
-        GameWorld.wildPokemonBuffer.buff_2[t1] = loc.pokemonInLocation.buff_2[t2] and
-        GameWorld.wildPokemonBuffer.buff_3[t1] = loc.pokemonInLocation.buff_3[t2] and
-        GameWorld.wildPokemonBuffer.buff_4[t1] = loc.pokemonInLocation.buff_4[t2] and
-        GameWorld.wildPokemonBuffer.buff_5[t1] = loc.pokemonInLocation.buff_5[t2] and
-        GameWorld.wildPokemonBuffer.buff_6[t1] = loc.pokemonInLocation.buff_6[t2] and
-        GameWorld.wildPokemonBuffer.buff_7[t1] = loc.pokemonInLocation.buff_7[t2]
-        GameWorld.wildPokemonBuffer[t2] = loc.pokemonInLocation[t1]
+        b.buff_0 = loc.pokemonInLocation.buff_0 
+        b.buff_1 = loc.pokemonInLocation.buff_1 
+        b.buff_2 = loc.pokemonInLocation.buff_1
+        b.buff_3 = loc.pokemonInLocation.buff_1
+        b.buff_4 = loc.pokemonInLocation.buff_1
+        b.buff_5 = loc.pokemonInLocation.buff_1
+        b.buff_6 = loc.pokemonInLocation.buff_1
+        b.buff_7 = loc.pokemonInLocation.buff_1
+
     }
 }
 
 
 
 //Old man glitch occurrence, in that data was moved to buffer
-pred moveNameToBuffer[t1, t2: TIME] { 
+pred moveNameToBuffer[t1, t2: TIME, b: Buffer] { 
     -- Models the Old Man glitch occuring, where the encounter buffer is overwritten with the player's name.
     
-        GameWorld.wildPokemonBuffer.buff_0[t2] = GameWorld.player.name_0
-        GameWorld.wildPokemonBuffer.buff_1[t2] = GameWorld.player.name_1
-        GameWorld.wildPokemonBuffer.buff_2[t2] = GameWorld.player.name_2
-        GameWorld.wildPokemonBuffer.buff_3[t2] = GameWorld.player.name_3
-        GameWorld.wildPokemonBuffer.buff_4[t2] = GameWorld.player.name_4
-        GameWorld.wildPokemonBuffer.buff_5[t2] = GameWorld.player.name_5
-        GameWorld.wildPokemonBuffer.buff_6[t2] = GameWorld.player.name_6
-        GameWorld.wildPokemonBuffer.buff_7[t2] = GameWorld.player.name_7
+        b.buff_0 = GameWorld.player.name_0
+        b.buff_1 = GameWorld.player.name_1
+        b.buff_2 = GameWorld.player.name_2
+        b.buff_3 = GameWorld.player.name_3
+        b.buff_4 = GameWorld.player.name_4
+        b.buff_5 = GameWorld.player.name_5
+        b.buff_6 = GameWorld.player.name_6
+        b.buff_7 = GameWorld.player.name_7
         
 }
 
@@ -211,41 +227,41 @@ pred locationNotTriggered{
     all loc: Location | loc.triggers = False
 }
 
-pred guaranteedInvalidEncounter[t1, t2: TIME] {
+pred guaranteedInvalidEncounter[t1, t2: TIME, b: Buffer] {
 
-    moveNameToBuffer[t1, t2]
+    moveNameToBuffer[t1, t2, b]
     -- ALL INVALID Levels
-    not isValidLevel[GameWorld.wildPokemonBuffer.buff_0[t2]]
-    not isValidLevel[GameWorld.wildPokemonBuffer.buff_2[t2]]
-    not isValidLevel[GameWorld.wildPokemonBuffer.buff_4[t2]]
-    not isValidLevel[GameWorld.wildPokemonBuffer.buff_6[t2]]
+    not isValidLevel[b.buff_0]
+    not isValidLevel[b.buff_2]
+    not isValidLevel[b.buff_4]
+    not isValidLevel[b.buff_6]
     -- ALL INVALID Pokemon IDs
-    not isValidPokemonID[GameWorld.wildPokemonBuffer.buff_1[t2]]
-    not isValidPokemonID[GameWorld.wildPokemonBuffer.buff_3[t2]]
-    not isValidPokemonID[GameWorld.wildPokemonBuffer.buff_5[t2]]
-    not isValidPokemonID[GameWorld.wildPokemonBuffer.buff_7[t2]]
+    not isValidPokemonID[b.buff_1]
+    not isValidPokemonID[b.buff_3]
+    not isValidPokemonID[b.buff_5]
+    not isValidPokemonID[b.buff_7]
     -- TODO: Overconstraint b/c this requires both an invalid ID AND Level.
 }
 
-pred guaranteedMissingNoEncounter[t1, t2: TIME] {
+pred guaranteedMissingNoEncounter[t1, t2: TIME, b: Buffer] {
 
-    moveNameToBuffer[t1, t2]
+    moveNameToBuffer[t1, t2, b]
     -- ALL MissingNo Pokemon IDs
-    isMissingNoID[GameWorld.wildPokemonBuffer.buff_1[t2]]
-    isMissingNoID[GameWorld.wildPokemonBuffer.buff_3[t2]]
-    isMissingNoID[GameWorld.wildPokemonBuffer.buff_5[t2]]
-    isMissingNoID[GameWorld.wildPokemonBuffer.buff_7[t2]]
+    isMissingNoID[b.buff_1]
+    isMissingNoID[b.buff_3]
+    isMissingNoID[b.buff_5]
+    isMissingNoID[b.buff_7]
 
 }
 
-pred guaranteedTrainerEncounter[t1, t2: TIME] {
+pred guaranteedTrainerEncounter[t1, t2: TIME, b: Buffer] {
 
-    moveNameToBuffer[t1, t2]
+    moveNameToBuffer[t1, t2, b]
     -- ALL Trainer Pokemon IDs
-    isGlitchTrainerID[GameWorld.wildPokemonBuffer.buff_1[t2]]
-    isGlitchTrainerID[GameWorld.wildPokemonBuffer.buff_3[t2]]
-    isGlitchTrainerID[GameWorld.wildPokemonBuffer.buff_5[t2]]
-    isGlitchTrainerID[GameWorld.wildPokemonBuffer.buff_7[t2]]
+    isGlitchTrainerID[b.buff_1]
+    isGlitchTrainerID[b.buff_3]
+    isGlitchTrainerID[b.buff_5]
+    isGlitchTrainerIDb[.buff_7]
 
 }
 
@@ -285,15 +301,19 @@ pred nimName{
     GameWorld.player.name_6 = 146
     GameWorld.player.name_7 = 142
 }
-pred speakToOldMan[t1, t2: TIME] {
+pred speakToOldMan[t1, t2: TIME, b: Buffer] {
     GameWorld.location[t1] = Cinnibar
     GameWorld.tutorialActivated = True
-    moveNameToBuffer[t1, t2]
+    moveNameToBuffer[t1, t2, b]
 }
 //init
 pred init[t: TIME] {
-    wellformedBuffer[GameWorld.wildPokemonBuffer[t]]
-    wellformedPlayerName
+    all loc: Location | {
+        GameWorld.wildPokemonBuffer[t] != loc.pokemonInLocation
+        wellformedBuffer[GameWorld.wildPokemonBuffer[t]]
+        wellformedBuffer[loc.pokemonInLocation]
+        wellformedPlayerName
+    }
 }
 -- unsure if this is what you meant for the time field
 pred traces {
@@ -312,7 +332,8 @@ pred traces {
             all t: TIME | t != lastState implies {
                 // GameWorld.wildPokemonBuffer[t.next] = GameWorld.wildPokemonBuffer[t]
                 // moveNameToBuffer[t, t.next]
-                moveLocationPokemonDataToPokemonBuffer[t, t.next]
+                moveLocationPokemonDataToPokemonBuffer[t, t.next, GameWorld.wildPokemonBuffer[t.next]] or
+                speakToOldMan[t, t.next, GameWorld.wildPokemonBuffer[t.next]]
                 -- want to implement some sort of thing that says l2 is 
                 // some l1, l2: Location | {
                 //     // (GameWorld.location[t] = l1 and GameWorld.location[t.next] = l2) 
@@ -330,10 +351,12 @@ pred traces {
 run {
     //wellformedBuffer[GameWorld.wildPokemonBuffer]
     //wellformedPlayerName
-    //allDifferentBufferValues
+
+    allDifferentPokemon[Location.pokemonInLocation]
     // init
     traces
-} for exactly 1 Player, exactly 1 Buffer, exactly 1 GameWorld, 9 Int, 3 TIME for {next is linear}
+    
+} for exactly 1 Player, exactly 2 Buffer, exactly 1 GameWorld, 9 Int, 3 TIME for {next is linear}
 
 //for exactly 1 Player, exactly 4 Buffer, exactly 1 GameWorld, 9 Int
 
