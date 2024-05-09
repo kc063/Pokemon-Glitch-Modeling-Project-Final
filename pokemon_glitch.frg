@@ -1,6 +1,11 @@
 #lang forge
 
 option run_sterling "pokemon_vis_basic.js"
+option solver MiniSatProver
+option core_minimization hybrid // was: rce
+option logtranslation 1
+option coregranularity 1
+
 abstract sig Boolean {}
 one sig True, False extends Boolean {}
 
@@ -12,7 +17,7 @@ sig TIME {
 abstract sig Town {}
 one sig Cinnibar, Wild extends Town {}
 one sig Buffer {
-    -- Possible Pokemon Encounters Memory Buffer
+    -- Possible Pokemon Encounters Memory Buffer 
     buff_0: one Int, -- level
     buff_1: one Int, -- pkmn id
     buff_2: one Int, -- level
@@ -165,17 +170,17 @@ pred allDifferentBufferValues {
 -- all loc: Location | loc.town = cinibar => ...
 --may want b1 and b2 to be the same thing
 pred moveLocationPokemonDataToPokemonBuffer[t1, t2: TIME]{
-    all loc: Location | {
+    some loc: Location | {
 
-        GameWorld.wildPokemonBuffer.buff_0[t2] = loc.pokemonInLocation.buff_0[t1] and
-        GameWorld.wildPokemonBuffer.buff_1[t2] = loc.pokemonInLocation.buff_1[t1] and
-        GameWorld.wildPokemonBuffer.buff_2[t2] = loc.pokemonInLocation.buff_2[t1] and
-        GameWorld.wildPokemonBuffer.buff_3[t2] = loc.pokemonInLocation.buff_3[t1] and
-        GameWorld.wildPokemonBuffer.buff_4[t2] = loc.pokemonInLocation.buff_4[t1] and
-        GameWorld.wildPokemonBuffer.buff_5[t2] = loc.pokemonInLocation.buff_5[t1] and
-        GameWorld.wildPokemonBuffer.buff_6[t2] = loc.pokemonInLocation.buff_6[t1] and
-        GameWorld.wildPokemonBuffer.buff_7[t2] = loc.pokemonInLocation.buff_7[t1]
-
+        GameWorld.wildPokemonBuffer.buff_0[t1] = loc.pokemonInLocation.buff_0[t2] and
+        GameWorld.wildPokemonBuffer.buff_1[t1] = loc.pokemonInLocation.buff_1[t2] and
+        GameWorld.wildPokemonBuffer.buff_2[t1] = loc.pokemonInLocation.buff_2[t2] and
+        GameWorld.wildPokemonBuffer.buff_3[t1] = loc.pokemonInLocation.buff_3[t2] and
+        GameWorld.wildPokemonBuffer.buff_4[t1] = loc.pokemonInLocation.buff_4[t2] and
+        GameWorld.wildPokemonBuffer.buff_5[t1] = loc.pokemonInLocation.buff_5[t2] and
+        GameWorld.wildPokemonBuffer.buff_6[t1] = loc.pokemonInLocation.buff_6[t2] and
+        GameWorld.wildPokemonBuffer.buff_7[t1] = loc.pokemonInLocation.buff_7[t2]
+        GameWorld.wildPokemonBuffer[t2] = loc.pokemonInLocation[t1]
     }
 }
 
@@ -306,7 +311,8 @@ pred traces {
             
             all t: TIME | t != lastState implies {
                 // GameWorld.wildPokemonBuffer[t.next] = GameWorld.wildPokemonBuffer[t]
-                moveNameToBuffer[t, t.next]
+                // moveNameToBuffer[t, t.next]
+                moveLocationPokemonDataToPokemonBuffer[t, t.next]
                 -- want to implement some sort of thing that says l2 is 
                 // some l1, l2: Location | {
                 //     // (GameWorld.location[t] = l1 and GameWorld.location[t.next] = l2) 
@@ -327,7 +333,7 @@ run {
     //allDifferentBufferValues
     // init
     traces
-} for exactly 1 Player, exactly 1   Buffer, exactly 1 GameWorld, 9 Int, 2 TIME for {next is linear}
+} for exactly 1 Player, exactly 1 Buffer, exactly 1 GameWorld, 9 Int, 3 TIME for {next is linear}
 
 //for exactly 1 Player, exactly 4 Buffer, exactly 1 GameWorld, 9 Int
 
