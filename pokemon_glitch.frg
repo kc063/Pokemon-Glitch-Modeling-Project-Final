@@ -1,10 +1,10 @@
 #lang forge
 
 option run_sterling "pokemon_vis_basic.js"
-option solver MiniSatProver
-option core_minimization hybrid // was: rce
-option logtranslation 1
-option coregranularity 1
+// option solver MiniSatProver
+// option core_minimization hybrid // was: rce
+// option logtranslation 1
+// option coregranularity 1
 
 abstract sig Boolean {}
 one sig True, False extends Boolean {}
@@ -217,7 +217,7 @@ pred moveNameToBuffer[t1, t2: TIME, b: Buffer] {
 }
 
 //new location => move to table
-pred moveLocations[l2:Location, t1, t2: TIME]{
+pred moveLocations[l2: Location, t1, t2: TIME]{
     (l2.triggers = True) => moveLocationPokemonDataToPokemonBuffer[t1, t2]}
 
 
@@ -228,7 +228,6 @@ pred locationNotTriggered{
 
 pred guaranteedInvalidEncounter[t1, t2: TIME, b: Buffer] {
 
-    moveNameToBuffer[t1, t2, b]
     -- ALL INVALID Levels
     not isValidLevel[b.buff_0]
     not isValidLevel[b.buff_2]
@@ -244,7 +243,6 @@ pred guaranteedInvalidEncounter[t1, t2: TIME, b: Buffer] {
 
 pred guaranteedMissingNoEncounter[t1, t2: TIME, b: Buffer] {
 
-    moveNameToBuffer[t1, t2, b]
     -- ALL MissingNo Pokemon IDs
     isMissingNoID[b.buff_1]
     isMissingNoID[b.buff_3]
@@ -255,7 +253,6 @@ pred guaranteedMissingNoEncounter[t1, t2: TIME, b: Buffer] {
 
 pred guaranteedTrainerEncounter[t1, t2: TIME, b: Buffer] {
 
-    moveNameToBuffer[t1, t2, b]
     -- ALL Trainer Pokemon IDs
     isGlitchTrainerID[b.buff_1]
     isGlitchTrainerID[b.buff_3]

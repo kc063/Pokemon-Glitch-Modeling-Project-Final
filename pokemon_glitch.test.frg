@@ -155,41 +155,58 @@ test suite for isMissingNoID {
     
 }
 
-pred isInvalidBuffer {
+pred isInvalidBuffer[b: Buffer] {
     -- True if the buffer contains ANY invalid IDs or Levels.
     -- Invalid Levels
-    isInvalidLevel[GameWorld.wildPokemonBuffer.buff_0] or
-    isInvalidLevel[GameWorld.wildPokemonBuffer.buff_2] or
-    isInvalidLevel[GameWorld.wildPokemonBuffer.buff_4] or
-    isInvalidLevel[GameWorld.wildPokemonBuffer.buff_6] or
+    isInvalidLevel[b.buff_0] or
+    isInvalidLevel[b.buff_2] or
+    isInvalidLevel[b.buff_4] or
+    isInvalidLevel[b.buff_6] or
     -- Invalid Pokemon IDs
-    isInvalidPokemonID[GameWorld.wildPokemonBuffer.buff_1] or
-    isInvalidPokemonID[GameWorld.wildPokemonBuffer.buff_3] or
-    isInvalidPokemonID[GameWorld.wildPokemonBuffer.buff_5] or
-    isInvalidPokemonID[GameWorld.wildPokemonBuffer.buff_7]
+    isInvalidPokemonID[b.buff_1] or
+    isInvalidPokemonID[b.buff_3] or
+    isInvalidPokemonID[b.buff_5] or
+    isInvalidPokemonID[b.buff_7]
 }
 
-pred knownValidBuffer {
+pred knownValidGameWorldwildPokemonBuffer[t: TIME] {
+    -- Level 50 Rapidashes, Skyler's favorite Pokemon :)
+   
+        GameWorld.wildPokemonBuffer.buff_0[t] = 50
+        GameWorld.wildPokemonBuffer.buff_2[t] = 50
+        GameWorld.wildPokemonBuffer.buff_4[t] = 50
+        GameWorld.wildPokemonBuffer.buff_6[t] = 50
+
+        GameWorld.wildPokemonBuffer.buff_1[t] = 164
+        GameWorld.wildPokemonBuffer.buff_3[t] = 164
+        GameWorld.wildPokemonBuffer.buff_5[t] = 164
+        GameWorld.wildPokemonBuffer.buff_7[t] = 164
+    
+}
+pred knownValidPokemonInLocationBuffer[loc: Location] {
     -- Level 50 Rapidashes, Skyler's favorite Pokemon :)
 
-    GameWorld.wildPokemonBuffer.buff_0 = 50
-    GameWorld.wildPokemonBuffer.buff_2 = 50
-    GameWorld.wildPokemonBuffer.buff_4 = 50
-    GameWorld.wildPokemonBuffer.buff_6 = 50
+    loc.pokemonInLocation.buff_0 = 50
+    loc.pokemonInLocation.buff_2 = 50
+    loc.pokemonInLocation.buff_4 = 50
+    loc.pokemonInLocation.buff_6 = 50
 
-    GameWorld.wildPokemonBuffer.buff_1 = 164
-    GameWorld.wildPokemonBuffer.buff_3 = 164
-    GameWorld.wildPokemonBuffer.buff_5 = 164
-    GameWorld.wildPokemonBuffer.buff_7 = 164
+    loc.pokemonInLocation.buff_1 = 164
+    loc.pokemonInLocation.buff_3 = 164
+    loc.pokemonInLocation.buff_5 = 164
+    loc.pokemonInLocation.buff_7 = 164
 }
 
 test suite for wellformedBuffer {
     -- There can be no single invalid value (level or ID) in a wellformed buffer.
-    test expect {no_invalid_values_in_wellformed_buffer: {isInvalidBuffer and wellformedBuffer} for exactly 1 GameWorld, 9 Int is unsat }
+    test expect {no_invalid_values_in_wellformed_wildPokemonBuffer: {all t: TIME | isInvalidBuffer[GameWorld.wildPokemonBuffer[t]] and wellformedBuffer[GameWorld.wildPokemonBuffer[t]]} for exactly 1 Player, exactly 3 Buffer, exactly 1 GameWorld, 9 Int, 3 TIME for {next is linear} is unsat }
+    test expect {no_invalid_values_in_wellformed_LocationBuffer: {isInvalidBuffer[Location.pokemonInLocation] and wellformedBuffer[Location.pokemonInLocation]} for exactly 1 Player, exactly 3 Buffer, exactly 1 GameWorld, 9 Int, 3 TIME for {next is linear} is unsat }
 
     -- Confirms that a known valid buffer satisfies the predicate.
-    test expect {known_valid_buffer_is_wellformed: {knownValidBuffer and wellformedBuffer} for exactly 1 GameWorld, 9 Int is sat }
-}
+    test expect {known_valid_buffer_is_wellformed_wildPokemonBuffer: {all t: TIME | knownValidGameWorldwildPokemonBuffer[t] and wellformedBuffer[GameWorld.wildPokemonBuffer[t]]} for exactly 1 Player, exactly 3 Buffer, exactly 1 GameWorld, 9 Int, 3 TIME for {next is linear} is sat }
+    test expect {known_valid_buffer_is_wellformed_LocationBuffer: {all loc: Location | knownValidPokemonInLocationBuffer[loc] and wellformedBuffer[loc.pokemonInLocation]} for exactly 1 Player, exactly 3 Buffer, exactly 1 GameWorld, 9 Int, 3 TIME for {next is linear} is sat }
+
+}   
 
 pred isInvalidPName {
     -- True if the Player Name contains any invalid characters.
@@ -216,32 +233,32 @@ test suite for wellformedPlayerName {
     
 }
 
-pred someBufferValueUnmatched {
-    GameWorld.wildPokemonBuffer.buff_0 != GameWorld.player.name_0 or
-    GameWorld.wildPokemonBuffer.buff_1 != GameWorld.player.name_1 or
-    GameWorld.wildPokemonBuffer.buff_2 != GameWorld.player.name_2 or
-    GameWorld.wildPokemonBuffer.buff_3 != GameWorld.player.name_3 or
-    GameWorld.wildPokemonBuffer.buff_4 != GameWorld.player.name_4 or
-    GameWorld.wildPokemonBuffer.buff_5 != GameWorld.player.name_5 or
-    GameWorld.wildPokemonBuffer.buff_6 != GameWorld.player.name_6 or
-    GameWorld.wildPokemonBuffer.buff_7 != GameWorld.player.name_7
+pred someBufferValueUnmatched[b: Buffer] {
+    b.buff_0 != GameWorld.player.name_0 or
+    b.buff_1 != GameWorld.player.name_1 or
+    b.buff_2 != GameWorld.player.name_2 or
+    b.buff_3 != GameWorld.player.name_3 or
+    b.buff_4 != GameWorld.player.name_4 or
+    b.buff_5 != GameWorld.player.name_5 or
+    b.buff_6 != GameWorld.player.name_6 or
+    b.buff_7 != GameWorld.player.name_7
 }
 
-test suite for oldManGlitch {
+test suite for moveNameToBuffer {
     -- There cannot be any unmatched buffers between player name & encounter buffer after the glitch.
-    test expect {no_unmatched_buffers: {oldManGlitch and someBufferValueUnmatched} for exactly 1 GameWorld, 9 Int is unsat }
+    test expect {no_unmatched_buffers: {all t: TIME | moveNameToBuffer[t, t.next, GameWorld.wildPokemonBuffer[t.next]] and someBufferValueUnmatched[GameWorld.wildPokemonBuffer[t.next]]} for exactly 1 Player, exactly 3 Buffer, exactly 1 GameWorld, 9 Int, 3 TIME for {next is linear} is unsat }
 
     -- Assuming the player's name is valid, encounters after the Old Man glitch will ALWAYS be glitched encounters (b/c characters are all > 100).
-    test expect {no_valid_pokemon_after_glitch_1: {oldManGlitch and wellformedBuffer and wellformedPlayerName} for exactly 1 GameWorld, 9 Int is unsat }
+    test expect {no_valid_pokemon_after_glitch_1: {all t: TIME | moveNameToBuffer[t, t.next, GameWorld.wildPokemonBuffer[t.next]]  and wellformedBuffer[GameWorld.wildPokemonBuffer[t.next]] and wellformedPlayerName} for exactly 1 Player, exactly 3 Buffer, exactly 1 GameWorld, 9 Int, 3 TIME for {next is linear} is unsat }
 
 }
 
-pred differentLettersAndOMGlitch {
-    allDifferentLetters and oldManGlitch
+pred differentLettersAndOMGlitch[t1, t2: TIME, b: Buffer] {
+    allDifferentLetters and speakToOldMan[t1, t2, b]
 }
 
-pred differentBuffersAndOMGlitch {
-    allDifferentBufferValues and oldManGlitch
+pred differentBuffersAndOMGlitch[t1, t2: TIME, b: Buffer] {
+    allDifferentBufferValues[b] and speakToOldMan[t1, t2, b]
 }
 
 test suite for allDifferentLetters {
@@ -250,58 +267,69 @@ test suite for allDifferentLetters {
     -- This took forever to run so we took it out.
 }
 
-pred notWellformedBuffer {
-    not wellformedBuffer
+pred notWellformedBuffer[b: Buffer] {
+    not wellformedBuffer[b]
 }
 
-pred normalPokemonEncounterInBuffer {
-    GameWorld.wildPokemonBuffer.buff_0 = 17 or -- Valid Level
-    GameWorld.wildPokemonBuffer.buff_1 = 17 -- Valid Pokemon
+pred normalPokemonEncounterInBuffer[b: Buffer] {
+    b.buff_0 = 17 or -- Valid Level
+    b.buff_1 = 17 -- Valid Pokemon
 }
-
+pred validToInvalidState[t: TIME]{
+    // no t2: TIME | t2.next = t
+    init[t]
+    moveNameToBuffer[t, t.next, GameWorld.wildPokemonBuffer[t.next]]
+}
 test suite for guaranteedInvalidEncounter {
     -- Assuming the player's name is valid, encounters after the Old Man glitch will ALWAYS be glitched encounters (b/c characters are all > 100).
-    test expect {no_valid_pokemon_after_glitch_2: {oldManGlitch and guaranteedInvalidEncounter and wellformedPlayerName} for exactly 1 GameWorld, 9 Int is sat }
+    test expect {no_valid_pokemon_after_glitch_2: {all t: TIME | not t2: TIME| t2.next = t and validToInvalidState[t] and guaranteedInvalidEncounter[t, t.next, GameWorld.wildPokemonBuffer[t.next]] and wellformedPlayerName} for exactly 1 Player, exactly 3 Buffer, exactly 1 GameWorld, 9 Int, 3 TIME for {next is linear} is sat }
 
     -- An invalid buffer is necessary to guarantee an invalid encounter.
-    assert notWellformedBuffer is necessary for guaranteedInvalidEncounter for exactly 1 GameWorld, 9 Int
-    test expect {no_valid_pokemon_and_guarantee: {normalPokemonEncounterInBuffer and guaranteedInvalidEncounter } for exactly 1 GameWorld, 9 Int is unsat }
+    assert all t: TIME | notWellformedBuffer[GameWorld.wildPokemonBuffer[t]] is necessary for guaranteedInvalidEncounter[t, t.next, GameWorld.wildPokemonBuffer[t]] for exactly 1 Player, exactly 3 Buffer, exactly 1 GameWorld, 9 Int, 3 TIME for {next is linear}
+
+    test expect {no_valid_pokemon_and_guarantee: {all t: TIME | normalPokemonEncounterInBuffer[GameWorld.wildPokemonBuffer[t.next]] and guaranteedInvalidEncounter[t, t.next, GameWorld.wildPokemonBuffer[t.next]]} for exactly 1 Player, exactly 3 Buffer, exactly 1 GameWorld, 9 Int, 3 TIME for {next is linear} is unsat }
 }
 
-pred allMissingNoInBuffer {
-    GameWorld.wildPokemonBuffer.buff_1 = 67
-    GameWorld.wildPokemonBuffer.buff_3 = 67
-    GameWorld.wildPokemonBuffer.buff_5 = 67
-    GameWorld.wildPokemonBuffer.buff_7 = 67
+pred allMissingNoInBuff[t: TIME] {
+    GameWorld.wildPokemonBuffer.buff_1[t] = 67
+    GameWorld.wildPokemonBuffer.buff_3[t] = 67
+    GameWorld.wildPokemonBuffer.buff_5[t] = 67
+    GameWorld.wildPokemonBuffer.buff_7[t] = 67
 }
 
-pred allTrainersInBuffer {
-    GameWorld.wildPokemonBuffer.buff_1 = 225
-    GameWorld.wildPokemonBuffer.buff_3 = 225
-    GameWorld.wildPokemonBuffer.buff_5 = 225
-    GameWorld.wildPokemonBuffer.buff_7 = 225
+pred allTrainersInBuff[t: TIME] {
+    GameWorld.wildPokemonBuffer.buff_1[t] = 225
+    GameWorld.wildPokemonBuffer.buff_3[t] = 225
+    GameWorld.wildPokemonBuffer.buff_5[t] = 225
+    GameWorld.wildPokemonBuffer.buff_7[t] = 225
 }
 
 test suite for guaranteedMissingNoEncounter {
     -- A buffer filled with all trainers guarantees no MissingNo encounter.
-    test expect {allTrainersInBuffBad: {allTrainersInBuffer and guaranteedMissingNoEncounter} for exactly 1 GameWorld, 9 Int is unsat }
+    test expect {allTrainersInBuffBad: {all t: TIME | validToInvalidState[t] and guaranteedTrainerEncounter[t, t.next, GameWorld.wildPokemonBuffer[t.next]] and guaranteedMissingNoEncounter[t, t.next, GameWorld.wildPokemonBuffer[t.next]]} for exactly 1 Player, exactly 1 Buffer, exactly 1 GameWorld, 9 Int, 3 TIME for {next is linear} is unsat }
 
-    -- A buffer that contains a normal pokemon encounter cannot guarantee a MissingNo encounter.
-    -- The normalPokemonEncounterInBuffer is only for 1 of the 4 Pokemon, so wellformedPlayerName ensures the other 3 fill realistically.
-    test expect {normalPokemonInMissingNo: {normalPokemonEncounterInBuffer and guaranteedMissingNoEncounter and wellformedPlayerName} for exactly 1 GameWorld, 9 Int is unsat }
+    // -- A buffer that contains a normal pokemon encounter cannot guarantee a MissingNo encounter.
+    // -- The normalPokemonEncounterInBuffer is only for 1 of the 4 Pokemon, so wellformedPlayerName ensures the other 3 fill realistically.
+    test expect {normalPokemonInMissingNo: {all t: TIME | validToInvalidState[t] and normalPokemonEncounterInBuffer[GameWorld.wildPokemonBuffer[t.next]] and guaranteedMissingNoEncounter[t, t.next, GameWorld.wildPokemonBuffer[t.next]] and wellformedPlayerName} for exactly 1 Player, exactly 2 Buffer, exactly 1 GameWorld, 9 Int, 3 TIME for {next is linear} is unsat }
 
     -- An all-MissingNo buffer guarantees a MissingNo encounter.
-    test expect {allMissingNoInBuffGood: {allMissingNoInBuffer and guaranteedMissingNoEncounter} for exactly 1 GameWorld, 9 Int is sat }
+    test expect {allMissingNoInNameGood: {some t: TIME | allMissingNoInBuff[t.next] and guaranteedMissingNoEncounter[t, t.next, GameWorld.wildPokemonBuffer[t.next]]} for exactly 1 Player, exactly 2 Buffer, exactly 1 GameWorld, 9 Int, 3 TIME for {next is linear} is sat }
 }
 
 test suite for guaranteedTrainerEncounter {
     -- A buffer filled with all trainers guarantees a Trainer encounter.
-    test expect {allTrainersInBuffGood: {allTrainersInBuffer and guaranteedTrainerEncounter} for exactly 1 GameWorld, 9 Int is sat }
+    test expect {allTrainersInBuffGood: {some t: TIME | allTrainersInBuff[t] and guaranteedTrainerEncounter[t, t.next, GameWorld.wildPokemonBuffer[t]]} for exactly 1 Player, exactly 3 Buffer, exactly 1 GameWorld, 9 Int, 3 TIME for {next is linear} is sat }
 
     -- A buffer that co ntains a normal pokemon encounter cannot guarantee a Trainer encounter.
     -- The normalPokemonEncounterInBuffer is only for 1 of the 4 Pokemon, so wellformedPlayerName ensures the other 3 fill realistically.
-    test expect {normalPokemonInTrainer: {normalPokemonEncounterInBuffer and guaranteedTrainerEncounter and wellformedPlayerName} for exactly 1 GameWorld, 9 Int is unsat }
+    test expect {normalPokemonInTrainer: {all t: TIME | normalPokemonEncounterInBuffer[GameWorld.wildPokemonBuffer[t.next]] and guaranteedTrainerEncounter[t, t.next, GameWorld.wildPokemonBuffer[t.next]] and wellformedPlayerName} for exactly 1 Player, exactly 3 Buffer, exactly 1 GameWorld, 9 Int, 3 TIME for {next is linear} is unsat }
 
     -- A buffer filled with all MissingNo guarantees no Trainer encounter.
-    test expect {allMissingNoInBuffBad: {allMissingNoInBuffer and guaranteedTrainerEncounter} for exactly 1 GameWorld, 9 Int is unsat }
+    test expect {allMissingNoInBuffBad: {all t: TIME | allMissingNoInBuff[t] and guaranteedTrainerEncounter[t, t.next, GameWorld.wildPokemonBuffer[t]]} for exactly 1 Player, exactly 3 Buffer, exactly 1 GameWorld, 9 Int, 3 TIME for {next is linear} is unsat }
 }
+// test suite for traces {
+//     -- given a valid init state (defined in traces) the buffer will only be invalid if the glitch occurs
+//     test expect {invalidBufferOnlyIfGlitch: {
+//         (traces and (some t: TIME | not wellformedbuffer[GameWorld.wildPokemonBuffer[t]]) <=> speakToOldMan[GameWorld.wildPokemonBuffer[t]]) 
+//     } for exactly 1 Player, exactly 2 Buffer, exactly 1 GameWorld, 9 Int, 3 TIME for {next is linear} is sat}
+// }
