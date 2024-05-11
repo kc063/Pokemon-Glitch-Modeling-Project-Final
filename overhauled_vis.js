@@ -16,7 +16,7 @@ function atomIdIn(idArr) {
   
 const gw = instance.signature("GameWorld").atoms()[0];  
   
-const buff = instance.field("wildPokemonBuffer");  
+const buff = instance.field("wildPokemonBuffer").atoms()[0];
   
 const encounterGridConfig = {  
   // Absolute location in parent (here, of the stage itself)  
@@ -46,87 +46,128 @@ const namePkDict = {}
 pkDict[0] =  
   "https://archives.bulbagarden.net/media/upload/4/47/RBGlitchMissingno._b.png";  
 namePkDict[0] = "000";  
+soundPkDict[0] = "https://jackofalltrades.neocities.org/1710_final_project/none.mp3"
 pkDict[1] = "https://archives.bulbagarden.net/media/upload/8/8c/Spr_1b_112.png";  
 namePkDict[1] = "Rhydon";  
+soundPkDict[1] = "https://jackofalltrades.neocities.org/1710_final_project/rhydon.mp3";
 pkDict[2] = "https://archives.bulbagarden.net/media/upload/8/8e/Spr_1b_115.png";  
 namePkDict[2] = "Kangaskhan";  
+soundPkDict[2] = "https://jackofalltrades.neocities.org/1710_final_project/kangaskhan.mp3";
 pkDict[3] = "https://archives.bulbagarden.net/media/upload/3/32/Spr_1b_032.png";  
 namePkDict[3] = "Nidoran M";  
+soundPkDict[3] = "https://jackofalltrades.neocities.org/1710_final_project/nidoranm.mp3";
 pkDict[4] = "https://archives.bulbagarden.net/media/upload/0/08/Spr_1b_035.png";  
 namePkDict[4] = "Clefairy";  
+soundPkDict[4] = "https://jackofalltrades.neocities.org/1710_final_project/clefairy.mp3";
 pkDict[5] = "https://archives.bulbagarden.net/media/upload/8/81/Spr_1b_021.png";  
 namePkDict[5] = "Spearow";  
+soundPkDict[5] = "https://jackofalltrades.neocities.org/1710_final_project/spearow.mp3";
 pkDict[6] = "https://archives.bulbagarden.net/media/upload/f/f5/Spr_1b_100.png";  
 namePkDict[6] = "Voltorb";  
+soundPkDict[6] = "https://jackofalltrades.neocities.org/1710_final_project/spearow.mp3";
 pkDict[7] = "https://archives.bulbagarden.net/media/upload/b/b8/Spr_1b_034.png";  
 namePkDict[7] = "Nidoking";  
+soundPkDict[7] = "https://jackofalltrades.neocities.org/1710_final_project/nidoking.mp3";
 pkDict[8] = "https://archives.bulbagarden.net/media/upload/8/8c/Spr_1b_080.png";  
 namePkDict[8]= "Slowbro";  
+soundPkDict[8] = "https://jackofalltrades.neocities.org/1710_final_project/slowbro.mp3";
 pkDict[9] = "https://archives.bulbagarden.net/media/upload/a/a3/Spr_1b_002.png";  
 namePkDict[9] = "Ivysaur";  
+soundPkDict[9] = "https://jackofalltrades.neocities.org/1710_final_project/ivysaur.mp3";
 pkDict[10] =   
   "https://archives.bulbagarden.net/media/upload/d/d2/Spr_1b_103.png";  
 namePkDict[10] = "Exeggutor";  
+soundPkDict[10] = "https://jackofalltrades.neocities.org/1710_final_project/exeggutor.mp3";
 pkDict[11] =  
   "https://archives.bulbagarden.net/media/upload/0/07/Spr_1b_108.png";  
-namePkDict[11] = "Lickitung";  
+namePkDict[11] = "Lickitung"; 
+soundPkDict[11] = "https://jackofalltrades.neocities.org/1710_final_project/lickitung.mp3";
 pkDict[12] =  
   "https://archives.bulbagarden.net/media/upload/6/6a/Spr_1b_102.png";  
 namePkDict[12] = "Exeggcute";  
+soundPkDict[12] = "https://jackofalltrades.neocities.org/1710_final_project/exeggcute.mp3";
 pkDict[13] =  
   "https://archives.bulbagarden.net/media/upload/8/80/Spr_1b_088.png";  
 namePkDict[13] = "Grimer";  
+soundPkDict[13] = "https://jackofalltrades.neocities.org/1710_final_project/grimer.mp3";
 pkDict[14] =  
   "https://archives.bulbagarden.net/media/upload/b/b9/Spr_1b_094.png";  
 namePkDict[14] = "Gengar";  
+soundPkDict[14] = "https://jackofalltrades.neocities.org/1710_final_project/gengar.mp3";
 pkDict[15] =  
   "https://archives.bulbagarden.net/media/upload/4/48/Spr_1b_029.png";  
 namePkDict[15] = "Nidoran (F)";  
+soundPkDict[15] = "https://jackofalltrades.neocities.org/1710_final_project/nidoranf.mp3";
 pkDict[16] =  
   "https://archives.bulbagarden.net/media/upload/e/e9/Spr_1b_031.png";  
   namePkDict[16] = "Nidoqueen";  
+soundPkDict[16] = "https://jackofalltrades.neocities.org/1710_final_project/nidoqueen.mp3";
   pkDict[17] =  
   "https://archives.bulbagarden.net/media/upload/5/56/Spr_1b_104.png";  
   namePkDict[17] = "Cubone";  
+soundPkDict[17] = "https://jackofalltrades.neocities.org/1710_final_project/cubone.mp3";
 pkDict[18] =  
   "https://archives.bulbagarden.net/media/upload/9/90/Spr_1b_111.png";  
   namePkDict[18] = "Rhyhorn";  
+soundPkDict[18] = "https://jackofalltrades.neocities.org/1710_final_project/rhyhorn.mp3";
 pkDict[19] =  
   "https://archives.bulbagarden.net/media/upload/7/77/Spr_1b_131.png";  
-  namePkDict[19] = "Lapras";  
+  namePkDict[19] = "Lapras";
+  soundPkDict[19] = "https://jackofalltrades.neocities.org/1710_final_project/lapras.mp3";  
 pkDict[20] =  
   "https://archives.bulbagarden.net/media/upload/1/1b/Spr_1b_059.png";  
   namePkDict[20] = "Arcanine";  
+  soundPkDict[20] = "https://jackofalltrades.neocities.org/1710_final_project/arcanine.mp3";
 pkDict[21] =  
   "https://archives.bulbagarden.net/media/upload/b/b8/Spr_1b_151.png";  
   namePkDict[21] = "Mewtwo";  
+  soundPkDict[21] = "https://jackofalltrades.neocities.org/1710_final_project/mewtwo.mp3";
+
 pkDict[22] =  
   "https://archives.bulbagarden.net/media/upload/0/05/Spr_1b_130.png";  
-  namePkDict[130] = "Gyarados";  
+  namePkDict[22] = "Gyarados";  
+  soundPkDict[22] = "https://jackofalltrades.neocities.org/1710_final_project/gyarados.mp3";
+
 pkDict[23] =  
   "https://archives.bulbagarden.net/media/upload/2/20/Spr_1b_090.png";  
   namePkDict[23] = "Shellder";  
+  soundPkDict[23] = "https://jackofalltrades.neocities.org/1710_final_project/shellder.mp3";
+
 pkDict[24] =  
   "https://archives.bulbagarden.net/media/upload/d/df/Spr_1b_072.png";  
   namePkDict[24] = "Tentacool";  
+  soundPkDict[24] = "https://jackofalltrades.neocities.org/1710_final_project/tentacool.mp3";
+
 pkDict[25] =  
   "https://archives.bulbagarden.net/media/upload/c/ce/Spr_1b_092.png";  
-namePkDict[25] = "Gastly";  
+namePkDict[25] = "Gastly"; 
+soundPkDict[25] = "https://jackofalltrades.neocities.org/1710_final_project/gastly.mp3";
+
 pkDict[26] =  
   "https://archives.bulbagarden.net/media/upload/0/0f/Spr_1b_123.png";  
   namePkDict[26] = "Scyther";  
+  soundPkDict[26] = "https://jackofalltrades.neocities.org/1710_final_project/scyther.mp3";
+
 pkDict[27] =  
   "https://archives.bulbagarden.net/media/upload/9/9f/Spr_1b_120.png";  
   namePkDict[27] = "Staryu";  
+  soundPkDict[27] = "https://jackofalltrades.neocities.org/1710_final_project/staryu.mp3";
+  
 pkDict[28] =  
   "https://archives.bulbagarden.net/media/upload/2/2c/Spr_1b_009.png";  
   namePkDict[28] = "Blastoise";  
+  soundPkDict[28] = "https://jackofalltrades.neocities.org/1710_final_project/blastoise.mp3";
+
 pkDict[29] =  
   "https://archives.bulbagarden.net/media/upload/7/70/Spr_1b_127.png";  
   namePkDict[29] = "Pinsir";  
+  soundPkDict[29] = "https://jackofalltrades.neocities.org/1710_final_project/pinsir.mp3";
+
 pkDict[30] =  
   "https://archives.bulbagarden.net/media/upload/e/e3/Spr_1b_114.png";  
   namePkDict[30] = "Tangela";  
+  soundPkDict[30] = "https://jackofalltrades.neocities.org/1710_final_project/tangela.mp3";
+
 pkDict[31] =  
   "https://archives.bulbagarden.net/media/upload/9/98/Missingno_RB.png";  
 namePkDict[31] = "MISSINGNO";  
@@ -935,6 +976,21 @@ plBuff.forEach((val,idx) =>{
   
   
 const stage = new Stage();  
+
+stage.add(new ImageBox({
+  coords:{x:300,y:400},
+  url: "https://jackofalltrades.neocities.org/1710_final_project/pkmn.png",
+  width: 400, 
+  height: 400,
+}))
+
+// return new ImageBox({  
+//   coords: { x: 0, y: 0 }, // Adjust coordinates as needed  
+//   url: pkDict[val],  
+//   width: 200, // Adjust width as needed  
+//   height: 200, // Adjust height as needed  
+// });  
+
 stage.add(encounterGrid);  
 
 var allElements = document.querySelectorAll('*');
