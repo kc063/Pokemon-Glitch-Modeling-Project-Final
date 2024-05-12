@@ -32,7 +32,7 @@ We have simplified the in-game logic slightly so that the player's name buffer i
 Character IDs, like Pokemon IDs, are ints ranging from 0 to 255, but only some in that range are valid characters.
 
 ### The Old Man Glitch
-The Old Man glitch occurs when a tutorial is activated (represented by the oldMan predicate) that moves the name of the player to the wild Pokemon encounter buffer. The game assumes that this buffer will be overwritten before entering a wild Pokemon encounter, since locations intended to have Pokemon will write Pokemon to this buffer, overwriting the name (which makes it a theoretically safe place to store data).
+The Old Man glitch occurs when a tutorial is activated (represented by the oldMan predicate) that moves the name of the player to the wild Pokemon encounter buffer. The game assumes that this buffer will be overwritten before entering a wild Pokemon encounter, since locations intended to have Pokemon will write Pokemon to this buffer, overwriting the name (which makes it a theoretically safe place to store data). As a result, as long as the buffer is written to with invalid data and then Pokemon are accessed WITHOUT an overwrite by the wild Pokemon buffer, the data's invalid state can be read as glitched Pokemon encounters.
 
 While some letter IDs correspond with valid Pokemon IDs, all enterable characters are invalid Pokemon levels.  (Valid Pokemon levels are 0 to 100, and there are no valid character IDs in that range).
 
@@ -67,15 +67,12 @@ The character-number mappings can be found here:
 
 https://bulbapedia.bulbagarden.net/wiki/Old_man_glitch
 
-## Other Simplifications and Additional Information
+## Simplifications, Tradeoffs, Assumptions,  and Additional Information
 
 We have slightly simplified the name generation process as pre-chosen names are handled differently by the game than ones the player inserts themselves from the name select screen. We have also chosen to exclude minor special rules around the terminal character for the player's name (essentially, it produces a valid level (80) and can only appear once, at the end). For readability and better visibility of what's going on under the hood, we have chosen to keep levels on the trainers, although the trainers that appear by Old Man glitch actually take their teams from elsewhere in the game data. Since this was extraneous to the project we made, we chose to exclude it. 
 
 Simplifications we made to location data include only using two locations-- "Cinnibar" and "Wild". There are, for the purposes of the demonstration, only two kinds of locations that matter-- locations that were programmed to have Pokemon encounters and thusly overwrite the buffer with Pokemon data, and those that don't, which provide the conditions for the name data to be read as Pokemon data, due to never clearing it from the wild Pokemon buffer. We also allow triggering of the demo (oldMan) arbitrarily and in any location, since what we are most interested in modeling are the two transition states (moving the name of the player to the buffer, and drawing from that invalid buffer when encountering Pokemon). 
 
-## Tradeoffs
-
-## Assumptions
 
 ## Goals 
 Our goals more or less stayed the same from the beginning, nor did anything we try turn out to be unrealistic. We were able to implement our reach goals as well so there was nothing that we would have considered unrealistic that we were unable to implement. We were concerned about runtime constraints with temporal so this seemed slightly unrealistic, as we thought that forge would take too long to run with temporal. In the end we were able to implement the temporal aspect, and it increased our runtime significantly, however not to an unusual degree. 
