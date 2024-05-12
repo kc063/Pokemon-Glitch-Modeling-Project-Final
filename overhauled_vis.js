@@ -15,9 +15,7 @@ function atomIdIn(idArr) {
 //Now we're good!  
   
 const gw = instance.signature("GameWorld").atoms()[0];  
-  
-const buff = instance.field("wildPokemonBuffer");
-  
+    
  
   
 function imageCooker(val) {  
@@ -1371,18 +1369,6 @@ charArray[244] = ","
 charArray[245] = "♀"  
   
   
-  
-  
-const buf = [  
-  fam(Buffer.join(buff_0)),  
-  fam(Buffer.join(buff_1)),  
-  fam(Buffer.join(buff_2)),  
-  fam(Buffer.join(buff_3)),  
-  fam(Buffer.join(buff_4)),  
-  fam(Buffer.join(buff_5)),  
-  fam(Buffer.join(buff_6)),  
-  fam(Buffer.join(buff_7)),  
-];  
 
 const plBuff = [  
   fam(Player.join(name_0)),  
@@ -1406,8 +1392,8 @@ idxbuff = [];
 plBuff.forEach((val,idx) =>{
   txt += charArray[val];
   if (idx % 2 == 0) {  
-      pkmnbuff[idx/2]=namePkDict[buf[idx]] 
-      pkcrybuff[idx/2]=soundPkDict[buf[idx]]
+      pkmnbuff[idx/2]=namePkDict[plBuff[idx]] 
+      pkcrybuff[idx/2]=soundPkDict[plBuff[idx]]
       idxbuff[idx/2] = val
     }
   else{
