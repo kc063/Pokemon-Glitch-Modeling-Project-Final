@@ -53,7 +53,7 @@ one sig GameWorld {
     player: one Player,
     wildPokemonBuffer: pfunc TIME -> Buffer,
     location:  pfunc TIME -> Location,
-    tutorialActivated: one Boolean
+    tutorialActivated: pfunc TIME -> Boolean
 }
 
 //Character + ID Predicates
@@ -184,19 +184,15 @@ pred allDifferentLevel[b: Buffer]{
 //TODO: Move a location's data into the Pokemon Buffer. A location should have ints similar to the player and buffer.
 -- all loc: Location | loc.town = cinibar => ...
 --may want b1 and b2 to be the same thing
-pred moveLocationPokemonDataToPokemonBuffer[t1, t2: TIME, b: Buffer]{
-    some loc: Location | {
-
-        b.buff_0 = loc.pokemonInLocation.buff_0 
-        b.buff_1 = loc.pokemonInLocation.buff_1 
-        b.buff_2 = loc.pokemonInLocation.buff_1
-        b.buff_3 = loc.pokemonInLocation.buff_1
-        b.buff_4 = loc.pokemonInLocation.buff_1
-        b.buff_5 = loc.pokemonInLocation.buff_1
-        b.buff_6 = loc.pokemonInLocation.buff_1
-        b.buff_7 = loc.pokemonInLocation.buff_1
-
-    }
+pred moveLocationPokemonDataToPokemonBuffer[l: Location, t1, t2: TIME, b: Buffer]{
+        b.buff_0 = l.pokemonInLocation.buff_0 
+        b.buff_1 = l.pokemonInLocation.buff_1 
+        b.buff_2 = l.pokemonInLocation.buff_2
+        b.buff_3 = l.pokemonInLocation.buff_3
+        b.buff_4 = l.pokemonInLocation.buff_4
+        b.buff_5 = l.pokemonInLocation.buff_5
+        b.buff_6 = l.pokemonInLocation.buff_6
+        b.buff_7 = l.pokemonInLocation.buff_7
 }
 
 
@@ -217,9 +213,10 @@ pred moveNameToBuffer[t1, t2: TIME, b: Buffer] {
 }
 
 //new location => move to table
-pred moveLocations[l2: Location, t1, t2: TIME]{
-    (l2.triggers = True) => moveLocationPokemonDataToPokemonBuffer[t1, t2]}
-
+pred moveLocations[l2:Location, t1, t2: TIME, b1, b2:Buffer]{
+    (l2.triggers = True) => moveLocationPokemonDataToPokemonBuffer[l2, t1, t2, b2] else b1=b2
+    GameWorld.location[t2] = l2
+}
 
 //TODO: Mainly for testing, just checks if a location does NOT trigger the glitch
 pred locationNotTriggered{
@@ -298,9 +295,9 @@ pred nimName{
     GameWorld.player.name_7 = 142
 }
 pred speakToOldMan[t1, t2: TIME, b: Buffer] {
-    GameWorld.location[t2] = Cinnibar
-    GameWorld.tutorialActivated = True
+    GameWorld.tutorialActivated[t2] = True
     moveNameToBuffer[t1, t2, b]
+    GameWorld.location[t2] = GameWorld.location[t1]
 }
 //init
 pred init[t: TIME] {
@@ -312,6 +309,15 @@ pred init[t: TIME] {
     }
     Cinnibar.triggers = False
     Wild.triggers = True
+    GameWorld.tutorialActivated[t] = False
+    GameWorld.location[t] = Wild
+}
+
+pred someLocation[t, t2: TIME, b, b2: Buffer]{
+    all loc: Location|{
+        GameWorld.tutorialActivated[t2] = GameWorld.tutorialActivated[t]
+        some l: Location | moveLocations[l, t, t2, b, b2]
+    }
 }
 -- unsure if this is what you meant for the time field
 pred traces {
@@ -328,30 +334,20 @@ pred traces {
             no lastState.next
             
             all t: TIME | t != lastState implies {
-                // GameWorld.wildPokemonBuffer[t.next] = GameWorld.wildPokemonBuffer[t]
-                moveNameToBuffer[t, t.next, GameWorld.wildPokemonBuffer[t.next]]
-                //moveLocationPokemonDataToPokemonBuffer[t, t.next, GameWorld.wildPokemonBuffer[t.next]] or
-                //speakToOldMan[t, t.next, GameWorld.wildPokemonBuffer[t.next]]
-                -- want to implement some sort of thing that says l2 is 
-                // some l1, l2: Location | {
-                //     // (GameWorld.location[t] = l1 and GameWorld.location[t.next] = l2) 
-                //     // => not moveLocations[l1, t, t.next] else moveLocations[l2, t, t.next]
-                // }
-
-                //speakToOldMan[t]
-                // not wellformedBuffer[GameWorld.wildPokemonBuffer[t]] <=> speakToOldMan[t]
-} 
-    }
-    //we should also make activating the tutorial a move that moves the name into the wild pokemon buffer
-    // (init and not wellformedBuffer[GameWorld.wildPokemonBuffer]) <=> moveLocations
+                speakToOldMan[t, t.next, GameWorld.wildPokemonBuffer[t.next]] or
+                someLocation[t, t.next, GameWorld.wildPokemonBuffer[t], GameWorld.wildPokemonBuffer[t.next]]
+            }
+    }      
 }
 -- Step 1: This run should show you four different pokemon at different valid levels (0 to 100)!
-run {
-    //wellformedBuffer[GameWorld.wildPokemonBuffer]
-    //wellformedPlayerName
+// run {
+//     //allDifferentPokemon[Location.pokemonInLocation]
+//     traces
+    
+// } for exactly 1 Player, exactly 3 Buffer, exactly 1 GameWorld, 9 Int, 3 TIME for {next is linear}
 
-    //allDifferentPokemon[Location.pokemonInLocation]
-    // init
+run {
+    allDifferentPokemon[Cinnibar.pokemonInLocation]
     traces
     
 } for exactly 1 Player, exactly 3 Buffer, exactly 1 GameWorld, 9 Int, 3 TIME for {next is linear}

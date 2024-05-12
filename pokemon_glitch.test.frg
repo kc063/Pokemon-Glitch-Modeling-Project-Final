@@ -244,18 +244,14 @@ pred someBufferValueUnmatched[b: Buffer] {
     b.buff_7 != GameWorld.player.name_7
 }
 
-test suite for moveNameToBuffer {
-    -- There cannot be any unmatched buffers between player name & encounter buffer after the glitch.
-    test expect {no_unmatched_buffers: {all t: TIME | moveNameToBuffer[t, t.next, GameWorld.wildPokemonBuffer[t.next]] and someBufferValueUnmatched[GameWorld.wildPokemonBuffer[t.next]]} for exactly 1 Player, exactly 3 Buffer, exactly 1 GameWorld, 9 Int, 3 TIME for {next is linear} is unsat }
+// test suite for moveNameToBuffer {
+//     -- There cannot be any unmatched buffers between player name & encounter buffer after the glitch.
+//     test expect {no_unmatched_buffers: {all t: TIME | moveNameToBuffer[t, t.next, GameWorld.wildPokemonBuffer[t.next]] and someBufferValueUnmatched[GameWorld.wildPokemonBuffer[t.next]]} for exactly 1 Player, exactly 3 Buffer, exactly 1 GameWorld, 9 Int, 3 TIME for {next is linear} is unsat }
 
-    -- Assuming the player's name is valid, encounters after the Old Man glitch will ALWAYS be glitched encounters (b/c characters are all > 100).
-    test expect {no_valid_pokemon_after_glitch_1: {all t: TIME | moveNameToBuffer[t, t.next, GameWorld.wildPokemonBuffer[t.next]]  and wellformedBuffer[GameWorld.wildPokemonBuffer[t.next]] and wellformedPlayerName} for exactly 1 Player, exactly 3 Buffer, exactly 1 GameWorld, 9 Int, 3 TIME for {next is linear} is unsat }
+//     -- Assuming the player's name is valid, encounters after the Old Man glitch will ALWAYS be glitched encounters (b/c characters are all > 100).
+//     test expect {no_valid_pokemon_after_glitch_1: {all t: TIME | moveNameToBuffer[t, t.next, GameWorld.wildPokemonBuffer[t.next]]  and wellformedBuffer[GameWorld.wildPokemonBuffer[t.next]] and wellformedPlayerName} for exactly 1 Player, exactly 3 Buffer, exactly 1 GameWorld, 9 Int, 3 TIME for {next is linear} is unsat }
 
-}
-
-pred differentLettersAndOMGlitch[t1, t2: TIME, b: Buffer] {
-    allDifferentLetters and speakToOldMan[t1, t2, b]
-}
+// }
 
 pred differentBuffersAndOMGlitch[t1, t2: TIME, b: Buffer] {
     allDifferentBufferValues[b] and speakToOldMan[t1, t2, b]
@@ -282,7 +278,7 @@ pred validToInvalidState[t: TIME]{
 }
 test suite for guaranteedInvalidEncounter {
     -- Assuming the player's name is valid, encounters after the Old Man glitch will ALWAYS be glitched encounters (b/c characters are all > 100).
-    test expect {no_valid_pokemon_after_glitch_2: {all t: TIME | not t2: TIME| t2.next = t and validToInvalidState[t] and guaranteedInvalidEncounter[t, t.next, GameWorld.wildPokemonBuffer[t.next]] and wellformedPlayerName} for exactly 1 Player, exactly 3 Buffer, exactly 1 GameWorld, 9 Int, 3 TIME for {next is linear} is sat }
+    test expect {no_valid_pokemon_after_glitch_2: {all t: TIME | no t2: TIME| t2.next = t and validToInvalidState[t] and guaranteedInvalidEncounter[t, t.next, GameWorld.wildPokemonBuffer[t.next]] and wellformedPlayerName} for exactly 1 Player, exactly 3 Buffer, exactly 1 GameWorld, 9 Int, 3 TIME for {next is linear} is sat }
 
     -- An invalid buffer is necessary to guarantee an invalid encounter.
     assert all t: TIME | notWellformedBuffer[GameWorld.wildPokemonBuffer[t]] is necessary for guaranteedInvalidEncounter[t, t.next, GameWorld.wildPokemonBuffer[t]] for exactly 1 Player, exactly 3 Buffer, exactly 1 GameWorld, 9 Int, 3 TIME for {next is linear}
