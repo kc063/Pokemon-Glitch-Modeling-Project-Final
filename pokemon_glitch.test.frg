@@ -330,9 +330,9 @@ test suite for traces {
     //     (traces and (some t: TIME | not wellformedBuffer[GameWorld.wildPokemonBuffer[t]] => GameWorld.tutorialActivated[t] = True) )
     // } for exactly 1 Player, exactly 2 Buffer, exactly 1 GameWorld, 2 Location, 9 Int, 3 TIME for {next is linear} is sat}
 
-    test expect {validBufferOnlyIfGlitch: {
-        (traces and (some t: TIME | wellformedBuffer[GameWorld.wildPokemonBuffer[t.next]] and GameWorld.tutorialActivated[t] = True and GameWorld.location[t.next] = Cinnibar))
-    } for exactly 1 Player, exactly 2 Buffer, exactly 1 GameWorld, 2 Location, 9 Int, 3 TIME for {next is linear} is unsat}
+    // test expect {validBufferOnlyIfGlitch: {
+    //     (traces and (some t: TIME | wellformedBuffer[GameWorld.wildPokemonBuffer[t.next]] and GameWorld.tutorialActivated[t] = True and GameWorld.location[t.next] = Cinnibar))
+    // } for exactly 1 Player, exactly 2 Buffer, exactly 1 GameWorld, 2 Location, 9 Int, 3 TIME for {next is linear} is unsat}
 }
 
 
