@@ -301,11 +301,11 @@ pred speakToOldMan[t1, t2: TIME, b: Buffer] {
 }
 //init
 pred init[t: TIME] {
+    wellformedPlayerName
     all loc: Location | {
         GameWorld.wildPokemonBuffer[t] != loc.pokemonInLocation
         wellformedBuffer[GameWorld.wildPokemonBuffer[t]]
         wellformedBuffer[loc.pokemonInLocation]
-        wellformedPlayerName
     }
     Cinnibar.triggers = False
     Wild.triggers = True
@@ -339,50 +339,10 @@ pred traces {
             }
     }      
 }
--- Step 1: This run should show you four different pokemon at different valid levels (0 to 100)!
-// run {
-//     //allDifferentPokemon[Location.pokemonInLocation]
-//     traces
-    
-// } for exactly 1 Player, exactly 3 Buffer, exactly 1 GameWorld, 9 Int, 3 TIME for {next is linear}
 
 run {
     allDifferentPokemon[Cinnibar.pokemonInLocation]
+    allDifferentLetters
     traces
     
 } for exactly 1 Player, exactly 3 Buffer, exactly 1 GameWorld, 9 Int, 3 TIME for {next is linear}
-
-//for exactly 1 Player, exactly 4 Buffer, exactly 1 GameWorld, 9 Int
-
--- Step 2: Perform the old man glitch and add a constraint that ensures a glitched encounter.
-// run {
-//     wellformedPlayerName
-//     allDifferentLetters
-//     guaranteedInvalidEncounter
-//     moveNameToBuffer
-// } for exactly 1 Player, exactly 1 Buffer, exactly 1 GameWorld, 9 Int
-
--- Step 3: Perform the old man glitch and add a constraint that ensures all MissingNo encounters.
-// run {
-//     wellformedPlayerName
-//     allDifferentLetters
-//     guaranteedMissingNoEncounter
-//     moveNameToBuffer
-// } for exactly 1 Player, exactly 1 Buffer, exactly 1 GameWorld, 9 Int
-
--- Step 4: Perform the old man glitch and add a constraint that ensures all glitched trainer encounters.
-// run {
-//     wellformedPlayerName
-//     allDifferentLetters
-//     guaranteedTrainerEncounter
-//     moveNameToBuffer
-// } for exactly 1 Player, exactly 1 Buffer, exactly 1 GameWorld, 9 Int
-
--- Step 5: Perform the old man glitch and put Nim's name in the buffer.
-// run {
-//     wellformedPlayerName
-//     moveNameToBuffer
-//     nimName
-// } for exactly 1 Player, exactly 1 Buffer, exactly 1 GameWorld, 9 Int
-
--- TODO: Distinguish between totally invalid buffer & glitched buffer in preds, same with player name?
