@@ -44,10 +44,7 @@ sig Location{
     -- Add wild pokemon for location 
     pokemonInLocation: one Buffer
 }
-
 one sig Cinnibar, Wild extends Location {}
-
-
 one sig GameWorld {
     -- A specific game world with one Buffer & one Player & one Location
     player: one Player,
@@ -298,8 +295,7 @@ pred nimName{
     GameWorld.player.name_7 = 142
 }
 pred speakToOldMan[t1, t2: TIME, b: Buffer] {
-    GameWorld.location[t2] = Cinnibar
-    GameWorld.tutorialActivated = True
+
     moveNameToBuffer[t1, t2, b]
 }
 //init

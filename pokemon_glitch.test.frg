@@ -282,7 +282,7 @@ pred validToInvalidState[t: TIME]{
 }
 test suite for guaranteedInvalidEncounter {
     -- Assuming the player's name is valid, encounters after the Old Man glitch will ALWAYS be glitched encounters (b/c characters are all > 100).
-    test expect {no_valid_pokemon_after_glitch_2: {all t: TIME | not t2: TIME| t2.next = t and validToInvalidState[t] and guaranteedInvalidEncounter[t, t.next, GameWorld.wildPokemonBuffer[t.next]] and wellformedPlayerName} for exactly 1 Player, exactly 3 Buffer, exactly 1 GameWorld, 9 Int, 3 TIME for {next is linear} is sat }
+    test expect {no_valid_pokemon_after_glitch_2: {all t: TIME | no t2: TIME| t2.next = t and validToInvalidState[t] and guaranteedInvalidEncounter[t, t.next, GameWorld.wildPokemonBuffer[t.next]] and wellformedPlayerName} for exactly 1 Player, exactly 3 Buffer, exactly 1 GameWorld, 9 Int, 3 TIME for {next is linear} is sat }
 
     -- An invalid buffer is necessary to guarantee an invalid encounter.
     assert all t: TIME | notWellformedBuffer[GameWorld.wildPokemonBuffer[t]] is necessary for guaranteedInvalidEncounter[t, t.next, GameWorld.wildPokemonBuffer[t]] for exactly 1 Player, exactly 3 Buffer, exactly 1 GameWorld, 9 Int, 3 TIME for {next is linear}
